@@ -1,5 +1,24 @@
 # Data
 
+## `kecamatan.csv`
+
+Semua kecamatan di **Kab. Garut** (42) dan **Kota Bandung** (30), beserta titik koordinatnya. Dipakai untuk seed tabel `kecamatan` dan menghitung jarak di matching.
+
+| Kolom | Isi |
+| --- | --- |
+| `id` | Kode wilayah kecamatan 7 digit (Wikidata P1588), contoh `3205120` = Cikajang |
+| `nama` | Nama kecamatan |
+| `kab_kota` | `Kab. Garut` atau `Kota Bandung` |
+| `lat`, `lng` | Koordinat titik kecamatan (WGS84) |
+| `wikidata` | ID item Wikidata, untuk pelacakan sumber |
+
+**Sumber:** [Wikidata](https://www.wikidata.org), lisensi CC0. Diambil 7 November 2026 lewat Wikidata Query Service: item `instance of` kecamatan dengan `located in` Kab. Garut (Q10371) atau Kota Bandung (Q10389).
+
+**Catatan:**
+
+- Koordinat adalah titik representatif dari Wikidata, bukan titik tengah wilayah yang dihitung dari batas wilayah. Cukup untuk perkiraan jarak.
+- Jarak garis lurus Garut → Kota Bandung: 26–93 km. Batas `S_jarak` di matching memakai 100 km (PRD bagian 9.1).
+
 ## `harga/cabai_rawit_merah_pihps.csv`
 
 Harga harian **cabai rawit merah** (Rp/kg), 1 Nov 2024 – 6 Nov 2026, 1.546 baris.
