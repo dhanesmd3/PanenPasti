@@ -64,6 +64,33 @@ Caranya lewat **pre-order hasil panen**, **pencocokan otomatis berdasarkan kalen
 
 ## 3. Data & Berita Pendukung
 
+### 3.0 Data lokal: petani Garut vs pasar Kota Bandung
+
+**Lokasi MVP:** penjual di **Kab. Garut**, penghasil cabai rawit terbesar di Jawa Barat. Pembeli di **Kota Bandung**, pusat UMKM kuliner.
+
+Data harga cabai rawit merah dari PIHPS Bank Indonesia, 1 Nov 2024 – 6 Nov 2026, disimpan di [`data/harga/cabai_rawit_merah_pihps.csv`](../data/harga/cabai_rawit_merah_pihps.csv). Rata-rata bulanan:
+
+| Bulan | Produsen Kab. Garut | Pasar tradisional Kota Bandung | Selisih |
+| --- | --- | --- | --- |
+| Des 2025 | Rp20.000 | Rp82.213 | +311% |
+| Feb 2026 | Rp32.105 | Rp87.838 | +174% |
+| Agu 2026 | Rp25.000 | Rp60.842 | +143% |
+| Okt 2026 | Rp60.000 | Rp93.816 | +56% |
+
+- Dalam 2 tahun, harga pasar Kota Bandung bergerak **Rp45.000–120.000/kg**. Harga produsen Garut bergerak **Rp20.000–80.000/kg**.
+- Garut dan Kota Bandung adalah wilayah berbeda. Selisihnya menggambarkan jarak harga petani–konsumen, bukan margin satu rantai pasok yang terukur.
+- Harga produsen Garut jarang diperbarui di PIHPS (berubah 18 kali dalam 2 tahun).
+
+**Produksi:** Kab. Garut tercatat sebagai penghasil cabai rawit terbesar di Jawa Barat pada 2023, sekitar 651 ribu kuintal ([Ayo Bandung](https://www.ayobandung.com/umum/7913915452/inilah-8-daerah-penghasil-cabai-rawit-terbanyak-di-jawa-barat-kabupaten-ini-panen-hingga-651-ribu-kwintal), mengutip BPS). *Verifikasi di [Open Data Jabar](https://opendata.jabarprov.go.id/id/dataset/produksi-cabai-rawit-berdasarkan-kabupatenkota-di-jawa-barat) sebelum dipakai di slide.*
+
+**Kenapa cabai:**
+
+- Cepat busuk, jadi waktu jual menentukan.
+- Penyumbang inflasi terbesar September 2026 ([Medcom](https://www.medcom.id/ekonomi/makro/xkEdPZeb-inflasi-september-2026-tembus-0-30-cabai-rawit-jadi-penyumbang-terbesar)) dan terbesar kedua untuk inflasi tahunan Oktober 2026 ([Antara](https://www.antaranews.com/berita/5825871/bps-harga-cabai-jadi-pemicu-inflasi-oktober-2026-capai-022-persen)).
+- Dipakai hampir semua UMKM kuliner.
+- Bisa dipanen berkali-kali dalam setahun.
+- Data harganya tersedia di tingkat petani, grosir, dan konsumen.
+
 Diurutkan dari yang terbaru. Semua tautan di bawah sudah dibuka dan angkanya dicek langsung ke artikel aslinya (7 Nov 2026), kecuali yang ditandai "perlu dicek".
 
 ### 3.1 Selisih harga petani vs konsumen
@@ -232,7 +259,7 @@ MVP belum memakai pembayaran sungguhan. Model bisnis cukup dijelaskan di slide d
 
 ## 7. Scope MVP & Kebutuhan Fungsional
 
-MVP mencakup **satu komoditas di satu kabupaten** (usulan: cabai rawit merah).
+MVP mencakup **cabai rawit merah**, dengan penjual di **Kab. Garut** dan pembeli di **Kota Bandung**.
 
 - **P0** wajib jadi tanggal 12 Nov.
 - **P1** hanya dikerjakan kalau P0 sudah stabil.
@@ -323,7 +350,7 @@ skor = 100 × (0,5 × S_tanggal + 0,3 × S_jumlah + 0,2 × S_jarak)
 | --- | --- | --- |
 | S_tanggal | max(0, 1 − \|selisih hari\| / 7) | Panen di hari yang sama = 1. Selisih 7 hari = 0 |
 | S_jumlah | min(1, sisa stok / kebutuhan) | Stok cukup = 1 |
-| S_jarak | max(0, 1 − jarak km / 50) | Haversine dari titik tengah kecamatan |
+| S_jarak | max(0, 1 − jarak km / 100) | Haversine dari titik tengah kecamatan. Batas 100 km karena kecamatan di Garut bisa lebih dari 50 km dari Kota Bandung |
 
 - Kalau skor sama, pilih harga per kg yang lebih rendah.
 - Tampilkan alasan skor di kartu hasil, misalnya "panen 1 hari sebelum tanggal butuh · stok cukup · 12 km".
@@ -331,9 +358,10 @@ skor = 100 × (0,5 × S_tanggal + 0,3 × S_jumlah + 0,2 × S_jarak)
 
 ### 9.2 Prediksi harga (F6), di TypeScript
 
-1. **Data:** harga harian/mingguan komoditas pilihan selama 1–2 tahun.
-   - Sumber: Panel Harga Pangan Bapanas atau PIHPS Nasional (Bank Indonesia). Cek syarat pakai dan cantumkan atribusi.
-   - Kalau tidak dapat, pakai data dummy realistis berlabel **"Data simulasi"**.
+1. **Data:** `data/harga/cabai_rawit_merah_pihps.csv` (PIHPS Bank Indonesia, 2 tahun). Atribusi wajib.
+   - **Model dilatih pada harga pedagang besar Kota Bandung.** Seri ini paling sering berubah (96 kali dalam 2 tahun).
+   - **Perkiraan harga di tingkat petani** = hasil prediksi × rasio produsen Garut / pedagang besar Bandung (rata-rata 3 bulan terakhir). Tampilkan sebagai perkiraan.
+   - Pembeli juga bisa melihat harga pasar Kota Bandung sebagai pembanding, misalnya "harga di platform 20% di bawah harga pasar".
 2. **Model:** tren (regresi linear 8 minggu terakhir) + faktor musiman (rata-rata rasio harga per minggu dalam setahun).
 3. **Output:** perkiraan 4 minggu ke depan dengan rentang bawah–atas (± simpangan baku residu), plus saran sederhana:
    - **"Tahan"** kalau perkiraan di minggu panen lebih tinggi dari harga sekarang.
@@ -408,7 +436,7 @@ flowchart LR
 | Tabel | Kolom utama | Catatan |
 | --- | --- | --- |
 | profiles | id (= auth user), peran (penjual/pembeli), nama, nama_usaha, kecamatan_id, no_hp | No HP hanya terbaca pihak lawan setelah pesanan Dikonfirmasi |
-| kecamatan | id, nama, lat, lng | Seed semua kecamatan di kabupaten pilihan |
+| kecamatan | id, nama, kab_kota, lat, lng | Seed semua kecamatan di Kab. Garut dan Kota Bandung |
 | komoditas | id, nama, satuan | MVP: satu baris |
 | listings | id, penjual_id, komoditas_id, jumlah_kg, sisa_kg, kualitas, tgl_panen, harga_per_kg, foto_url, status (estimasi/siap/habis), is_surplus, harga_surplus | `sisa_kg` hanya diubah lewat fungsi pesanan |
 | kebutuhan | id, pembeli_id, komoditas_id, jumlah_kg, tgl_butuh, berulang, teks_asli, dibuat_ai | Teks asli disimpan untuk transparansi AI-1 |
@@ -601,7 +629,7 @@ Hindari kata "ijon" karena konotasinya merugikan petani.
 **Pertanyaan terbuka**
 
 - [ ] Nama final aplikasi dan nama tim?
-- [ ] Komoditas dan kabupaten (usulan: cabai rawit merah)?
+- [x] Komoditas dan lokasi: cabai rawit merah, petani Kab. Garut → pembeli Kota Bandung (diputuskan 7 Nov)
 - [ ] Siapa pegang peran A/B/C/D, dan siapa Ketua Tim (penanda tangan surat orisinalitas)?
 - [ ] Provider AI final: cek batas Gemini free tier di AI Studio hari ini?
 - [ ] Data harga publik mana yang bisa diunduh untuk komoditas dan daerah pilihan?

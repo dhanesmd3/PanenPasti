@@ -17,6 +17,7 @@ export interface Profile {
 export interface Kecamatan {
   id: number;
   nama: string;
+  kab_kota: "Kab. Garut" | "Kota Bandung";
   lat: number;
   lng: number;
 }
