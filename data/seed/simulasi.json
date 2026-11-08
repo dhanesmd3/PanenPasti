@@ -1,0 +1,96 @@
+{
+  "_keterangan": "DATA SIMULASI untuk demo PanenPasti. Semua nama, usaha, dan nomor HP fiktif. Tanggal panen ditulis sebagai offset hari dari tanggal seed (panen_dalam_hari) agar data demo tidak basi. Harga mengacu pada PIHPS Nov 2026: produsen Kab. Garut Rp60.000/kg, pedagang besar Kota Bandung Rp71.900/kg (lihat data/harga).",
+  "komoditas": [
+    { "id": 1, "nama": "Cabai Rawit Merah", "satuan": "kg" }
+  ],
+  "penjual": [
+    {
+      "kunci": "pj1",
+      "nama": "Asep Saepudin",
+      "nama_usaha": "Kelompok Tani Pasir Hejo (Simulasi)",
+      "kecamatan_id": 3205120,
+      "no_hp": "6281200000101",
+      "listing": [
+        { "jumlah_kg": 500, "kualitas": "Super, merah merata", "panen_dalam_hari": 21, "harga_per_kg": 62000, "status": "estimasi" },
+        { "jumlah_kg": 150, "kualitas": "Sedang", "panen_dalam_hari": 3, "harga_per_kg": 58000, "status": "siap" }
+      ]
+    },
+    {
+      "kunci": "pj2",
+      "nama": "Dedeh Kurniasih",
+      "nama_usaha": "Koperasi Tani Mukti Sejahtera (Simulasi)",
+      "kecamatan_id": 3205160,
+      "no_hp": "6281200000102",
+      "listing": [
+        { "jumlah_kg": 800, "kualitas": "Super", "panen_dalam_hari": 14, "harga_per_kg": 61000, "status": "estimasi" }
+      ]
+    },
+    {
+      "kunci": "pj3",
+      "nama": "Ujang Rohman",
+      "nama_usaha": "Kelompok Tani Sinar Tani (Simulasi)",
+      "kecamatan_id": 3205171,
+      "no_hp": "6281200000103",
+      "listing": [
+        { "jumlah_kg": 300, "kualitas": "Super", "panen_dalam_hari": 7, "harga_per_kg": 60000, "status": "siap" },
+        { "jumlah_kg": 400, "kualitas": "Sedang", "panen_dalam_hari": 28, "harga_per_kg": 59000, "status": "estimasi" }
+      ]
+    },
+    {
+      "kunci": "pj4",
+      "nama": "Euis Komariah",
+      "nama_usaha": "KWT Mekar Wangi (Simulasi)",
+      "kecamatan_id": 3205150,
+      "no_hp": "6281200000104",
+      "listing": [
+        { "jumlah_kg": 120, "kualitas": "Super", "panen_dalam_hari": 10, "harga_per_kg": 63000, "status": "estimasi" }
+      ]
+    },
+    {
+      "kunci": "pj5",
+      "nama": "Cecep Hidayat",
+      "nama_usaha": "Gapoktan Lembur Subur (Simulasi)",
+      "kecamatan_id": 3205170,
+      "no_hp": "6281200000105",
+      "listing": [
+        { "jumlah_kg": 600, "kualitas": "Sedang", "panen_dalam_hari": 2, "harga_per_kg": 56000, "status": "siap", "is_surplus": true, "harga_surplus": 52000 }
+      ]
+    },
+    {
+      "kunci": "pj6",
+      "nama": "Rina Marlina",
+      "nama_usaha": "Kelompok Tani Gunung Sari (Simulasi)",
+      "kecamatan_id": 3205151,
+      "no_hp": "6281200000106",
+      "listing": [
+        { "jumlah_kg": 250, "kualitas": "Super", "panen_dalam_hari": 18, "harga_per_kg": 61500, "status": "estimasi" }
+      ]
+    },
+    {
+      "kunci": "pj7",
+      "nama": "Dadang Sutisna",
+      "nama_usaha": "Kelompok Tani Tunas Harapan (Simulasi)",
+      "kecamatan_id": 3205161,
+      "no_hp": "6281200000107",
+      "listing": [
+        { "jumlah_kg": 200, "kualitas": "Sedang", "panen_dalam_hari": 25, "harga_per_kg": 58500, "status": "estimasi" }
+      ]
+    },
+    {
+      "kunci": "pj8",
+      "nama": "Yayan Supriatna",
+      "nama_usaha": "Koperasi Tani Pakenjeng Raya (Simulasi)",
+      "kecamatan_id": 3205050,
+      "no_hp": "6281200000108",
+      "listing": [
+        { "jumlah_kg": 350, "kualitas": "Super", "panen_dalam_hari": 12, "harga_per_kg": 59500, "status": "estimasi" }
+      ]
+    }
+  ],
+  "pembeli": [
+    { "kunci": "pb1", "nama": "Siti Nurhaliza", "nama_usaha": "Warung Nasi Teh Siti (Simulasi)", "kecamatan_id": 3273230, "no_hp": "6281200000201" },
+    { "kunci": "pb2", "nama": "Budi Santoso", "nama_usaha": "Katering Dapur Berkah (Simulasi)", "kecamatan_id": 3273090, "no_hp": "6281200000202" },
+    { "kunci": "pb3", "nama": "Rizky Pratama", "nama_usaha": "Seblak & Ayam Geprek Juara (Simulasi)", "kecamatan_id": 3273070, "no_hp": "6281200000203" },
+    { "kunci": "pb4", "nama": "Lilis Suryani", "nama_usaha": "Rumah Makan Sunda Saung Asri (Simulasi)", "kecamatan_id": 3273150, "no_hp": "6281200000204" }
+  ]
+}
