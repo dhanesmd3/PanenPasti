@@ -362,11 +362,26 @@ skor = 100 × (0,5 × S_tanggal + 0,3 × S_jumlah + 0,2 × S_jarak)
    - **Model dilatih pada harga pedagang besar Kota Bandung.** Seri ini paling sering berubah (96 kali dalam 2 tahun).
    - **Perkiraan harga di tingkat petani** = hasil prediksi × rasio produsen Garut / pedagang besar Bandung (rata-rata 3 bulan terakhir). Tampilkan sebagai perkiraan.
    - Pembeli juga bisa melihat harga pasar Kota Bandung sebagai pembanding, misalnya "harga di platform 20% di bawah harga pasar".
-2. **Model:** tren (regresi linear 8 minggu terakhir) + faktor musiman (rata-rata rasio harga per minggu dalam setahun).
-3. **Output:** perkiraan 4 minggu ke depan dengan rentang bawah–atas (± simpangan baku residu), plus saran sederhana:
-   - **"Tahan"** kalau perkiraan di minggu panen lebih tinggi dari harga sekarang.
+2. **Model "balik ke rata-rata"** (`lib/forecast.ts`): harga yang jauh dari rata-rata 52 minggu cenderung kembali pelan-pelan.
+   ```
+   prediksi(h) = μ + (harga minggu terakhir − μ) × 0,9^h
+   ```
+   Tren garis lurus dan faktor musiman sudah diuji dan **membuat prediksi lebih buruk**, karena data 2 tahun belum cukup untuk pola musim.
+3. **Rentang 80%** diambil dari kesalahan model yang sama di masa lalu (kuantil 10% dan 90% rasio aktual ÷ prediksi). Rentangnya terkalibrasi, bukan tebakan.
+4. **Akurasi (uji mundur pada 62 titik, data PIHPS Nov 2024 – Nov 2026):**
+
+   | Minggu ke- | Meleset rata-rata (model) | Meleset rata-rata (harga minggu ini) | Harga aktual dalam rentang 80% |
+   | --- | --- | --- | --- |
+   | 1 | 9,2% | 8,7% | 82% |
+   | 2 | 15,8% | 15,6% | 81% |
+   | 3 | 20,8% | 21,3% | 79% |
+   | 4 | 24,1% | 25,4% | 79% |
+
+   **Jawaban untuk juri:** harga cabai memang sulit ditebak. Akurasi model setara tebakan "harga minggu ini" untuk 1–2 minggu, dan sedikit lebih baik untuk 3–4 minggu. Nilai utamanya adalah **rentang yang jujur dan terbukti** serta **sinyal arah** (harga di atas rata-rata cenderung turun). Karena itu aplikasi selalu menampilkan rentang, bukan satu angka. Uji ini dijalankan otomatis di `lib/forecast.test.ts`.
+5. **Saran sederhana:**
+   - **"Tahan"** kalau perkiraan di minggu panen lebih dari 3% di atas harga sekarang.
    - **"Jual"** kalau sebaliknya.
-4. **AI-3** mengubah angka tersebut jadi penjelasan, selalu dengan disclaimer "perkiraan, bukan jaminan".
+6. **AI-3** mengubah angka tersebut jadi penjelasan, selalu dengan disclaimer "perkiraan, bukan jaminan".
 
 ---
 
