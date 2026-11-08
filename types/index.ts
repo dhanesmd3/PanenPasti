@@ -96,9 +96,14 @@ export interface Notifikasi {
   dibuat_pada: string;
 }
 
+export type TingkatHarga = "produsen" | "pedagang_besar" | "pasar_tradisional";
+
 export interface HargaHistoris {
   komoditas_id: number;
   tanggal: string;
+  /** Contoh: "Kab. Garut", "Kota Bandung" */
+  wilayah: string;
+  tingkat: TingkatHarga;
   harga: number;
   sumber: string;
 }
