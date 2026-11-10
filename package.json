@@ -8,7 +8,9 @@
     "start": "next start",
     "lint": "eslint",
     "test": "vitest run",
-    "test:watch": "vitest"
+    "test:watch": "vitest",
+    "seed": "node --env-file=.env.local scripts/seed-simulasi.mjs",
+    "impor:harga": "node --env-file=.env.local scripts/impor-harga.mjs"
   },
   "dependencies": {
     "@google/genai": "^3.0.0",
