@@ -92,6 +92,8 @@ export interface Notifikasi {
   tipe: TipeNotifikasi;
   pesan: string;
   order_id: string | null;
+  /** Listing terkait. Selalu terisi untuk notifikasi surplus. */
+  listing_id?: string | null;
   dibaca: boolean;
   dibuat_pada: string;
 }
@@ -204,4 +206,43 @@ export interface GagalAI {
   pesan: string;
   /** true = tampilkan form manual (fitur tetap bisa dipakai tanpa AI). */
   pakai_form_manual: boolean;
+}
+
+// ---------------------------------------------------------------------------
+// Tambahan backend (A). Hanya penambahan: tipe di atas tidak berubah bentuk.
+// ---------------------------------------------------------------------------
+
+/** Bagian profil yang boleh dilihat pengguna lain (tanpa no_hp). */
+export type ProfilPublik = Pick<Profile, "id" | "nama" | "nama_usaha" | "kecamatan_id">;
+
+/** Kontak pihak lawan. Hanya ada selama pesanan Dikonfirmasi, Dikirim, atau Selesai. */
+export interface KontakPesanan {
+  nama: string;
+  nama_usaha: string | null;
+  no_hp: string | null;
+  /** "https://wa.me/62...". Null jika pihak lawan belum mengisi nomor HP. */
+  wa_url: string | null;
+}
+
+/** Hasil GET /api/orders dan GET /api/orders/[id]. */
+export interface PesananLengkap extends Order {
+  /** jumlah_kg × harga_per_kg, dibulatkan ke rupiah. */
+  total_harga: number;
+  listing: Listing;
+  penjual: ProfilPublik;
+  pembeli: ProfilPublik;
+  /** Null selama kontak belum terbuka. */
+  kontak: KontakPesanan | null;
+  /** Posisi pengguna yang sedang login di pesanan ini. */
+  peran_saya: Peran;
+  /** Status berikutnya yang boleh dipilih pengguna ini. Kosong = tidak ada tombol aksi. */
+  aksi: OrderStatus[];
+}
+
+/** Bentuk respons gagal untuk endpoint milik A (orders, notifikasi, surplus, auth, profil). */
+export interface GalatApi {
+  /** Kalimat berbahasa Indonesia yang boleh langsung ditampilkan ke pengguna. */
+  error: string;
+  /** Kode galat dari database, mis. "PP409". Tidak selalu ada. */
+  kode?: string;
 }

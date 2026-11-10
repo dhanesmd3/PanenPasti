@@ -1,0 +1,25 @@
+# Konfigurasi Supabase lokal (Supabase CLI + Docker), dipakai untuk cadangan
+# offline saat Grand Final. Tidak memengaruhi project Supabase di cloud.
+#
+#   npx supabase start      menyalakan Postgres, Auth, Storage, Studio di laptop
+#   npx supabase db reset   memasang ulang semua migrasi + seed.sql
+#   npx supabase status     menampilkan URL dan key lokal untuk .env.local
+#
+# Hanya nilai yang berbeda dari bawaan CLI yang ditulis di sini. Port bawaan:
+# API 54321, database 54322, Studio 54323.
+
+project_id = "panenpasti"
+
+[db]
+# Samakan dengan versi Postgres project cloud (Settings > Infrastructure).
+major_version = 17
+
+[auth]
+site_url = "http://localhost:3000"
+additional_redirect_urls = ["http://127.0.0.1:3000"]
+minimum_password_length = 8
+
+[auth.email]
+# Pendaftaran langsung aktif tanpa klik tautan email, supaya demo tidak
+# bergantung pada pengiriman email.
+enable_confirmations = false

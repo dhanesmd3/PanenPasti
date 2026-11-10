@@ -1,7 +1,11 @@
 // Supabase client untuk kode server (route handler, server component).
-// Dibuat oleh D untuk /api/match; A bebas menyesuaikan (folder milik A).
+//
+// Client ini memakai anon key + cookie sesi pengguna, jadi semua query tetap
+// tunduk pada Row Level Security. Buat client baru di setiap permintaan; jangan
+// disimpan di variabel modul.
 
 import { createServerClient } from "@supabase/ssr";
+import type { SupabaseClient } from "@supabase/supabase-js";
 import { cookies } from "next/headers";
 
 export function supabaseTerkonfigurasi(): boolean {
@@ -10,7 +14,7 @@ export function supabaseTerkonfigurasi(): boolean {
   );
 }
 
-export async function buatSupabaseServer() {
+export async function buatSupabaseServer(): Promise<SupabaseClient> {
   const url = process.env.NEXT_PUBLIC_SUPABASE_URL;
   const kunci = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
   if (!url || !kunci) {
@@ -32,14 +36,32 @@ export async function buatSupabaseServer() {
   });
 }
 
-/** Id pengguna yang sedang login, atau null (juga null jika Supabase belum siap). */
-export async function idPenggunaOpsional(): Promise<string | null> {
+export interface SesiServer {
+  supabase: SupabaseClient;
+  userId: string;
+  email: string | null;
+}
+
+/**
+ * Sesi pengguna yang sedang login, atau null. Token diverifikasi lewat
+ * getClaims() (tanda tangan JWT dicek, bukan sekadar membaca cookie), jadi
+ * userId aman dipakai untuk keputusan di server.
+ */
+export async function sesiOpsional(): Promise<SesiServer | null> {
   if (!supabaseTerkonfigurasi()) return null;
   try {
     const supabase = await buatSupabaseServer();
-    const { data } = await supabase.auth.getUser();
-    return data.user?.id ?? null;
+    const { data, error } = await supabase.auth.getClaims();
+    const sub = data?.claims?.sub;
+    if (error || typeof sub !== "string" || sub === "") return null;
+    const email = typeof data?.claims?.email === "string" ? data.claims.email : null;
+    return { supabase, userId: sub, email };
   } catch {
     return null;
   }
+}
+
+/** Id pengguna yang sedang login, atau null (juga null jika Supabase belum siap). */
+export async function idPenggunaOpsional(): Promise<string | null> {
+  return (await sesiOpsional())?.userId ?? null;
 }

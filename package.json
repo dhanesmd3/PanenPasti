@@ -10,7 +10,9 @@
     "test": "vitest run",
     "test:watch": "vitest",
     "seed": "node --env-file=.env.local scripts/seed-simulasi.mjs",
-    "impor:harga": "node --env-file=.env.local scripts/impor-harga.mjs"
+    "impor:harga": "node --env-file=.env.local scripts/impor-harga.mjs",
+    "uji:supabase": "node --env-file=.env.local supabase/tests/uji-supabase.mjs",
+    "typecheck": "next typegen && tsc --noEmit"
   },
   "dependencies": {
     "@google/genai": "^3.0.0",
@@ -22,6 +24,7 @@
     "zod": "^4.6.7"
   },
   "devDependencies": {
+    "@electric-sql/pglite": "^0.5.16",
     "@tailwindcss/turbopack": "^4",
     "@types/node": "^20",
     "@types/react": "^19",
