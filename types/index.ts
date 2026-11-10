@@ -129,30 +129,79 @@ export interface TitikPrediksi {
 
 export type SaranJual = "tahan" | "jual";
 
+/** Satu minggu riwayat harga (rata-rata mingguan, Rp/kg). */
+export interface HargaMingguan {
+  /** Senin awal minggu */
+  tanggal: string;
+  grosir_bandung: number | null;
+  pasar_bandung: number | null;
+  petani_garut: number | null;
+}
+
 /** Hasil GET /api/harga/prediksi. */
 export interface Prediksi {
   komoditas_id: number;
-  historis: Pick<HargaHistoris, "tanggal" | "harga">[];
-  prediksi: TitikPrediksi[];
-  saran: SaranJual;
   sumber_data: string;
+  /** Tanggal data harga terakhir yang tersedia. */
+  data_sampai: string;
   /** true jika memakai data dummy berlabel "Data simulasi". */
   simulasi: boolean;
+  /** Rata-rata minggu terakhir yang tersedia. */
+  harga_terakhir: {
+    grosir_bandung: number;
+    pasar_bandung: number;
+    /** Perkiraan = grosir × rasio_petani */
+    petani_perkiraan: number;
+  };
+  /** Rata-rata 90 hari: harga produsen Garut ÷ grosir Bandung. */
+  rasio_petani: number;
+  /** 26 minggu terakhir, terlama dulu. */
+  historis: HargaMingguan[];
+  prediksi_grosir: TitikPrediksi[];
+  /** Perkiraan harga di tingkat petani (prediksi grosir × rasio). Tampilkan ini ke penjual. */
+  prediksi_petani: TitikPrediksi[];
+  /** Senin minggu panen yang dipakai untuk saran. */
+  minggu_panen: string;
+  saran: SaranJual;
+  /** Perubahan perkiraan harga petani di minggu panen vs sekarang, mis. 0.05 = +5%. */
+  perubahan: number;
 }
 
-/** Hasil POST /api/ai/kebutuhan (AI-1). */
+export type HariBerulang =
+  | "mingguan:senin"
+  | "mingguan:selasa"
+  | "mingguan:rabu"
+  | "mingguan:kamis"
+  | "mingguan:jumat"
+  | "mingguan:sabtu"
+  | "mingguan:minggu";
+
+/**
+ * Hasil POST /api/ai/kebutuhan (AI-1).
+ * Field null = tidak disebut di kalimat pengguna; form meminta pengguna mengisinya.
+ */
 export interface KebutuhanAI {
+  komoditas_id: number;
   komoditas: string;
-  jumlah_kg: number;
-  tgl_butuh: string;
-  berulang: string | null;
+  jumlah_kg: number | null;
+  tgl_butuh: string | null;
+  berulang: HariBerulang | null;
 }
 
-/** Hasil POST /api/ai/listing (AI-2). */
+/** Hasil POST /api/ai/listing (AI-2). Field null = tidak disebut. */
 export interface ListingAI {
+  komoditas_id: number;
   komoditas: string;
-  jumlah_kg: number;
-  tgl_panen: string;
+  jumlah_kg: number | null;
+  tgl_panen: string | null;
   kualitas: string | null;
   harga_per_kg: number | null;
+}
+
+/** Bentuk respons gagal untuk semua endpoint AI. */
+export interface GagalAI {
+  ok: false;
+  pesan: string;
+  /** true = tampilkan form manual (fitur tetap bisa dipakai tanpa AI). */
+  pakai_form_manual: boolean;
 }
