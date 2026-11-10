@@ -40,3 +40,37 @@ export function bulanDari(tanggal: string): number {
   keNomorHari(tanggal);
   return Number(tanggal.slice(5, 7));
 }
+
+const NAMA_HARI = ["Minggu", "Senin", "Selasa", "Rabu", "Kamis", "Jumat", "Sabtu"];
+const NAMA_BULAN = [
+  "Januari", "Februari", "Maret", "April", "Mei", "Juni",
+  "Juli", "Agustus", "September", "Oktober", "November", "Desember",
+];
+
+/** Tanggal hari ini di zona WIB (Asia/Jakarta), "YYYY-MM-DD". */
+export function hariIniWib(sekarang: Date = new Date()): string {
+  return new Intl.DateTimeFormat("en-CA", {
+    timeZone: "Asia/Jakarta",
+    year: "numeric",
+    month: "2-digit",
+    day: "2-digit",
+  }).format(sekarang);
+}
+
+export function namaHari(tanggal: string): string {
+  return NAMA_HARI.at(new Date(keNomorHari(tanggal) * MS_PER_HARI).getUTCDay())!;
+}
+
+/** "Selasa, 10 November 2026" */
+export function tanggalPanjang(tanggal: string): string {
+  const [y, m, d] = tanggal.split("-").map(Number);
+  keNomorHari(tanggal);
+  return `${namaHari(tanggal)}, ${d} ${NAMA_BULAN.at(m - 1)} ${y}`;
+}
+
+/** "10 Nov" */
+export function tanggalPendek(tanggal: string): string {
+  const [, m, d] = tanggal.split("-").map(Number);
+  keNomorHari(tanggal);
+  return `${d} ${NAMA_BULAN.at(m - 1)!.slice(0, 3)}`;
+}
