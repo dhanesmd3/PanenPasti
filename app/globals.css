@@ -1,26 +1,158 @@
 @import "tailwindcss";
 
-:root {
-  --background: #ffffff;
-  --foreground: #171717;
-}
-
+/*
+ * Token PanenPasti: "ladang saat senja". Kanvas krem, tinta cokelat kenari,
+ * aksen terakota. Permukaan lembut: sudut membulat, garis tipis pucat,
+ * bayangan hangat yang tipis.
+ *
+ * Nama token lama (daun, cabai, kunyit) dipertahankan supaya kelas yang sudah
+ * dipakai tidak perlu diganti; nilainya mengikuti palet ini.
+ */
 @theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
+  --color-latar: #efe5d8; /* kanvas halaman */
+  --color-kartu: #fbf7f1; /* kartu, header */
+  --color-teks: #573d21; /* tinta utama */
+  --color-redup: #6b553d; /* teks sekunder, kontras AA di atas krem */
+  --color-garis: #e2d2bf; /* garis pemisah pucat */
+  --color-pasir: #e8d2bb; /* isi lembut, keadaan aktif */
+  --color-terakota: #e3a36e; /* tombol utama */
+  --color-aprikot: #efa164; /* hover tombol, bar pengumuman */
+  --color-sage: #dfe4c4; /* badge "siap"; bukan elemen interaktif */
+
+  --color-daun: #7a4a1e; /* aksen teks: tautan, menu aktif */
+  --color-daun-gelap: #573d21;
+  --color-daun-muda: #e8d2bb;
+  --color-cabai: #9b3b1f; /* galat & surplus */
+  --color-cabai-muda: #f4dccf;
+  --color-kunyit: #7a5410;
+  --color-kunyit-muda: #f3e4bf;
+
+  --font-serif: var(--font-fraunces), Georgia, serif;
+  --font-narrow: var(--font-barlow-condensed), "Arial Narrow", sans-serif;
+  --font-sans: var(--font-serif);
+
+  /* Bayangan hangat (bukan abu-abu) supaya kartu terangkat tanpa garis tebal. */
+  --shadow-sm: 0 1px 2px rgb(87 61 33 / 0.05), 0 4px 14px rgb(87 61 33 / 0.06);
+  --shadow-md: 0 2px 4px rgb(87 61 33 / 0.06), 0 12px 28px rgb(87 61 33 / 0.1);
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-  }
+:root {
+  color-scheme: light;
 }
 
 body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+  background: var(--color-latar);
+  color: var(--color-teks);
+  font-family: var(--font-serif);
+  font-size: 16px;
+  /* Serif yang lebih membulat, terasa hangat dan tidak kaku. */
+  font-variation-settings: "SOFT" 60;
+  -webkit-font-smoothing: antialiased;
+}
+
+h1,
+h2,
+h3 {
+  font-variation-settings: "SOFT" 100;
+  letter-spacing: -0.015em;
+  text-wrap: balance;
+}
+
+/* Fokus keyboard seragam di semua kontrol (skill ui-ux-pro-max: focus states). */
+:focus-visible {
+  outline: 2px solid var(--color-daun);
+  outline-offset: 3px;
+}
+
+/* Tailwind v4 tidak lagi memberi cursor pointer pada tombol. */
+button:not(:disabled),
+[role="tab"],
+label:has(> input[type="radio"]),
+select {
+  cursor: pointer;
+}
+
+/* Muncul saat digulir, tanpa JavaScript. Browser yang belum mendukung langsung menampilkan isi. */
+@supports (animation-timeline: view()) {
+  .muncul-gulir {
+    animation: muncul linear both;
+    animation-timeline: view();
+    animation-range: entry 0% entry 40%;
+  }
+}
+
+::selection {
+  background: var(--color-terakota);
+  color: var(--color-teks);
+}
+
+/* Gerak halus. Semuanya mati untuk pengguna yang memilih kurangi gerakan. */
+@keyframes muncul {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+}
+@keyframes melayang {
+  50% {
+    transform: translate(6px, -14px) rotate(4deg);
+  }
+}
+@keyframes bergoyang {
+  50% {
+    transform: rotate(2.5deg);
+  }
+}
+@keyframes berkilau {
+  50% {
+    opacity: 0.95;
+    transform: scale(1.04);
+  }
+}
+@keyframes kilap {
+  to {
+    background-position: -200% 0;
+  }
+}
+
+@utility animasi-muncul {
+  animation: muncul 0.5s cubic-bezier(0.2, 0.7, 0.2, 1) both;
+}
+@utility animasi-melayang {
+  animation: melayang 6s ease-in-out infinite;
+  transform-box: fill-box;
+  transform-origin: center;
+}
+@utility animasi-bergoyang {
+  animation: bergoyang 7s ease-in-out infinite;
+  transform-box: fill-box;
+  transform-origin: top center;
+}
+@utility animasi-berkilau {
+  animation: berkilau 8s ease-in-out infinite;
+  transform-box: fill-box;
+  transform-origin: center;
+}
+/* Kerangka loading dengan kilap yang bergerak. */
+@utility kerangka {
+  background: linear-gradient(90deg, #e8d2bb80 0%, #f6ead9 50%, #e8d2bb80 100%);
+  background-size: 200% 100%;
+  animation: kilap 1.6s linear infinite;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation: none !important;
+    transition: none !important;
+  }
+}
+
+/* Label fungsional: tombol, menu, badge, label form. */
+@utility label-cetak {
+  font-family: var(--font-narrow);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  font-weight: 600;
 }
