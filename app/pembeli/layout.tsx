@@ -1,5 +1,6 @@
 import Link from "next/link";
 import { Suspense } from "react";
+import { LoncengNotifikasi } from "@/components/LoncengNotifikasi";
 import { NavAtas, NavBawah, TombolKeluar } from "@/components/pembeli/NavPembeli";
 import { Ikon } from "@/components/ui/Ikon";
 
@@ -35,13 +36,9 @@ export default function Layout({ children }: LayoutProps<"/pembeli">) {
             <NavAtas />
           </Suspense>
           <div className="ml-auto flex items-center gap-1 md:ml-0">
-            <Link
-              href="/notifikasi"
-              aria-label="Notifikasi"
-              className="flex size-10 items-center justify-center rounded-full text-redup transition hover:bg-pasir/60 hover:text-teks"
-            >
-              <Ikon nama="lonceng" />
-            </Link>
+            <Suspense>
+              <LoncengNotifikasi />
+            </Suspense>
             <TombolKeluar />
           </div>
         </div>

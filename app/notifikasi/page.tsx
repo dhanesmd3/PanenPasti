@@ -1,5 +1,5 @@
-import SegeraHadir from "@/components/SegeraHadir";
+import { DaftarNotifikasi } from "./DaftarNotifikasi";
 
 export default function Page() {
-  return <SegeraHadir judul="Notifikasi" pemilik="C" />;
+  return <DaftarNotifikasi />;
 }

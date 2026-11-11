@@ -31,11 +31,14 @@ export async function ambilListingMendatang({
   komoditasId,
   dari,
   sampai,
+  surplus,
   batas = 200,
 }: {
   komoditasId?: number;
   dari?: string;
   sampai?: string;
+  /** true = hanya listing yang sedang ditandai surplus. */
+  surplus?: boolean;
   batas?: number;
 }): Promise<ListingPenjual[]> {
   let q = buatSupabaseBrowser()
@@ -48,6 +51,7 @@ export async function ambilListingMendatang({
   if (komoditasId) q = q.eq("komoditas_id", komoditasId);
   if (dari) q = q.gte("tgl_panen", dari);
   if (sampai) q = q.lte("tgl_panen", sampai);
+  if (surplus) q = q.eq("is_surplus", true);
   const { data, error } = await q;
   if (error) throw new Error(pesanSupabase(error));
   return (data as unknown as Record<string, unknown>[]).map(keListingPenjual);
