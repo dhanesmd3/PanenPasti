@@ -5,6 +5,7 @@ import { kelasTombol } from "@/components/ui/Button";
 import { Ikon, type NamaIkon } from "@/components/ui/Ikon";
 import { IlustrasiLadang } from "@/components/ui/IlustrasiLadang";
 import { Galat, Kosong, MemuatGrid } from "@/components/ui/Keadaan";
+import { AlertSurplus } from "@/components/pembeli/AlertSurplus";
 import { ambilListingMendatang, KartuListing, KELAS_GRID_PRODUK } from "@/components/pembeli/listing";
 import { useKecamatan, useMuat } from "@/lib/klien";
 import { hariIniWib } from "@/lib/tanggal";
@@ -16,7 +17,6 @@ const PINTASAN: { href: string; ikon: NamaIkon; judul: string; teks: string }[] 
   { href: "/notifikasi", ikon: "lonceng", judul: "Notifikasi", teks: "Kabar terbaru pesanan" },
 ];
 
-// shortcut: alert surplus menyusul (Hari 5).
 export default function Page() {
   const kecamatan = useKecamatan();
   const { data, galat, memuat, muatUlang } = useMuat(() => ambilListingMendatang({ dari: hariIniWib(), batas: 10 }));
@@ -34,6 +34,8 @@ export default function Page() {
           Cari pemasok <Ikon nama="panah" className="size-4" />
         </Link>
       </section>
+
+      <AlertSurplus kecamatan={kecamatan} />
 
       <ul className="grid grid-cols-2 gap-3 md:grid-cols-4 md:gap-4">
         {PINTASAN.map((p) => (
