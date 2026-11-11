@@ -2,7 +2,7 @@
 // hook pemuat dengan status loading/error, dan tabel referensi (kecamatan, komoditas).
 
 import { useCallback, useEffect, useState } from "react";
-import type { Kecamatan, Komoditas } from "@/types";
+import type { Kecamatan, Komoditas, Peran } from "@/types";
 import { buatSupabaseBrowser } from "./supabase/client";
 
 /**
@@ -109,4 +109,21 @@ export function useKomoditas(): Map<number, Komoditas> {
 /** Nama komoditas dari tabel referensi; "Hasil panen" selama belum termuat. */
 export function useNamaKomoditas(id: number): string {
   return useKomoditas().get(id)?.nama ?? "Hasil panen";
+}
+
+/**
+ * Peran pengguna yang login, untuk tautan di halaman bersama (mis. /notifikasi).
+ * Dibaca di browser karena halaman itu diprerender statis (cacheComponents).
+ */
+export async function ambilPeranSaya(): Promise<Peran | null> {
+  const supabase = buatSupabaseBrowser();
+  const { data: sesi } = await supabase.auth.getSession();
+  const id = sesi.session?.user.id;
+  if (!id) return null;
+  const { data } = await supabase.from("profiles").select("peran").eq("id", id).maybeSingle();
+  return data?.peran === "penjual" || data?.peran === "pembeli" ? data.peran : null;
+}
+
+export function usePeranSaya(): Peran | null {
+  return useMuat(ambilPeranSaya).data;
 }
