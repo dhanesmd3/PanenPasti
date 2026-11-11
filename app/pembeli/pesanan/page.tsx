@@ -7,6 +7,7 @@ import { BadgeStatus } from "@/components/ui/Badge";
 import { Button, kelasTombol } from "@/components/ui/Button";
 import { Galat, Kosong, Memuat } from "@/components/ui/Keadaan";
 import { FotoListing } from "@/components/pembeli/listing";
+import { PenjualPengganti } from "@/components/pembeli/PenjualPengganti";
 import { Ikon } from "@/components/ui/Ikon";
 import { ambilJson, useMuat, useNamaKomoditas } from "@/lib/klien";
 import { formatKg, formatRupiah } from "@/lib/format";
@@ -33,6 +34,7 @@ const TAB: { label: string; status: OrderStatus[] | null }[] = [
 function KartuPesanan({ p, setelahUbah }: { p: PesananLengkap; setelahUbah: () => void }) {
   const [galat, setGalat] = useState<string | null>(null);
   const [proses, setProses] = useState(false);
+  const [lihatPengganti, setLihatPengganti] = useState(false);
 
   async function ubah(status: OrderStatus) {
     if (!window.confirm(AKSI_PEMBELI[status]!.konfirmasi)) return;
@@ -97,9 +99,10 @@ function KartuPesanan({ p, setelahUbah }: { p: PesananLengkap; setelahUbah: () =
             </a>
           )}
           {p.status === "gagal_panen" && (
-            <Link href="/pembeli/cari" className={kelasTombol("kedua")}>
-              Cari penjual pengganti
-            </Link>
+            <Button varian="kedua" aria-expanded={lihatPengganti} onClick={() => setLihatPengganti((b) => !b)}>
+              <Ikon nama="orang" className="size-4" />
+              {lihatPengganti ? "Sembunyikan pengganti" : "Lihat penjual pengganti"}
+            </Button>
           )}
           {aksi.map((s) => (
             <Button key={s} varian={AKSI_PEMBELI[s]!.varian} disabled={proses} onClick={() => ubah(s)}>
@@ -107,6 +110,12 @@ function KartuPesanan({ p, setelahUbah }: { p: PesananLengkap; setelahUbah: () =
             </Button>
           ))}
         </div>
+      )}
+      {lihatPengganti && (
+        <section aria-label="Penjual pengganti" className="flex flex-col gap-3">
+          <p className="text-sm text-redup">Panen serupa di sekitar tanggal yang sama, diurutkan dari yang paling cocok.</p>
+          <PenjualPengganti pesanan={p} />
+        </section>
       )}
       {galat && <Galat pesan={galat} />}
     </article>
