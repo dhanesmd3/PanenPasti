@@ -6,7 +6,7 @@ import { keNomorHari, namaHari, tambahHari } from "../../tanggal";
 import { hasilkanJson } from "../hasilkan-json";
 import { konteksKalender, tanggalWajar } from "../kalender";
 import type { ProviderAI } from "../provider";
-import { ATURAN_KOMODITAS, ATURAN_SATUAN, KOMODITAS, kgWajar } from "./bersama";
+import { ATURAN_KOMODITAS, ATURAN_SATUAN, kgWajar, petakanKomoditas, PILIHAN_KOMODITAS } from "./bersama";
 
 const HARI_BERULANG = [
   "mingguan:senin",
@@ -19,7 +19,7 @@ const HARI_BERULANG = [
 ] as const satisfies readonly HariBerulang[];
 
 const SkemaLLM = z.object({
-  komoditas: z.enum(["cabai_rawit_merah", "lainnya"]),
+  komoditas: z.enum(PILIHAN_KOMODITAS),
   jumlah_kg: z.number().nullable().describe("Jumlah dalam kg. null jika tidak disebut."),
   tgl_butuh: z
     .string()
@@ -70,7 +70,8 @@ export async function ekstrakKebutuhan(
     provider,
   );
 
-  if (hasil.komoditas !== "cabai_rawit_merah") {
+  const komoditas = petakanKomoditas(hasil.komoditas);
+  if (!komoditas) {
     return { ok: false, alasan: "komoditas_tidak_didukung" };
   }
 
@@ -80,8 +81,8 @@ export async function ekstrakKebutuhan(
   return {
     ok: true,
     data: {
-      komoditas_id: KOMODITAS.id,
-      komoditas: KOMODITAS.nama,
+      komoditas_id: komoditas.id,
+      komoditas: komoditas.nama,
       jumlah_kg: kgWajar(hasil.jumlah_kg),
       tgl_butuh: tgl,
       berulang: hasil.berulang,

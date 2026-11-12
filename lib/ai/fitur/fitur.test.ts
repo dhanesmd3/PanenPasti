@@ -46,12 +46,28 @@ describe("AI-1 ekstrakKebutuhan", () => {
     expect(diterima[0].prompt).toContain('"""butuh 20 kg cengek tiap senin"""');
   });
 
-  it("menolak komoditas selain cabai rawit merah", async () => {
+  it("menolak komoditas di luar daftar", async () => {
     const { provider } = palsu({ komoditas: "lainnya", jumlah_kg: 5, tgl_butuh: null, berulang: null });
-    expect(await ekstrakKebutuhan("bawang merah 5 kg", HARI_INI, provider)).toEqual({
+    expect(await ekstrakKebutuhan("bawang putih 5 kg", HARI_INI, provider)).toEqual({
       ok: false,
       alasan: "komoditas_tidak_didukung",
     });
+  });
+
+  it("memetakan komoditas lain di daftar ke id-nya", async () => {
+    const { provider, diterima } = palsu({ komoditas: "tomat", jumlah_kg: 30, tgl_butuh: null, berulang: null });
+    const h = await ekstrakKebutuhan("tomat 30 kg", HARI_INI, provider);
+    expect(h).toEqual({
+      ok: true,
+      data: { komoditas_id: 3, komoditas: "Tomat", jumlah_kg: 30, tgl_butuh: null, berulang: null },
+    });
+    // Prompt memuat semua kode komoditas supaya AI bisa memilih.
+    expect(diterima[0].sistem).toContain('"kubis" untuk kubis, kol, engkol');
+  });
+
+  it("menolak kode komoditas yang tidak dikenal", async () => {
+    const { provider } = palsu({ komoditas: "durian", jumlah_kg: 5, tgl_butuh: null, berulang: null });
+    await expect(ekstrakKebutuhan("durian 5 kg", HARI_INI, provider)).rejects.toThrow();
   });
 
   it("membuang tanggal di masa lalu dan jumlah tidak wajar", async () => {
@@ -113,6 +129,17 @@ describe("AI-2 ekstrakListing", () => {
       harga_per_kg: 35,
     });
     const h2 = await ekstrakListing("5 kuintal harga 35", HARI_INI, aneh.provider);
+    expect(h2.ok && h2.data.harga_per_kg).toBeNull();
+  });
+
+  it("memakai rentang harga per komoditas", async () => {
+    // Rp4.000/kg wajar untuk kubis, tidak wajar untuk cabai rawit.
+    const kubis = palsu({ komoditas: "kubis", jumlah_kg: 1000, tgl_panen: null, kualitas: null, harga_per_kg: 4000 });
+    const h = await ekstrakListing("kol 1 ton 4 ribu", HARI_INI, kubis.provider);
+    expect(h.ok && h.data).toMatchObject({ komoditas_id: 5, komoditas: "Kubis", harga_per_kg: 4000 });
+
+    const cabai = palsu({ komoditas: "cabai_rawit_merah", jumlah_kg: 100, tgl_panen: null, kualitas: null, harga_per_kg: 4000 });
+    const h2 = await ekstrakListing("rawit 1 kuintal 4 ribu", HARI_INI, cabai.provider);
     expect(h2.ok && h2.data.harga_per_kg).toBeNull();
   });
 });

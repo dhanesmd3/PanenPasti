@@ -113,7 +113,7 @@ cek(
 const listings = penjual.flatMap(({ id, orang }) =>
   orang.listing.map((l) => ({
     penjual_id: id,
-    komoditas_id: 1,
+    komoditas_id: l.komoditas_id ?? 1,
     jumlah_kg: l.jumlah_kg,
     sisa_kg: l.jumlah_kg,
     kualitas: l.kualitas,

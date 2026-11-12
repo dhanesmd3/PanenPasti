@@ -23,7 +23,7 @@ export async function POST(request: Request) {
   try {
     const hasil = await ekstrakListing(masukan.data.teks, hariIniWib());
     if (!hasil.ok) {
-      return gagal("PanenPasti saat ini baru melayani cabai rawit merah.", 422);
+      return gagal("Komoditas itu belum tersedia di PanenPasti. Pilih komoditas dari daftar di form.", 422);
     }
     return Response.json({ ok: true, data: hasil.data, label: LABEL_AI });
   } catch (e) {
