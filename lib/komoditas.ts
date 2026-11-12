@@ -59,3 +59,24 @@ export function komoditasDariKode(kode: string): InfoKomoditas | undefined {
 export function komoditasDariId(id: number): InfoKomoditas | undefined {
   return DAFTAR_KOMODITAS.find((k) => k.id === id);
 }
+
+/**
+ * Foto pengganti saat penjual tidak mengunggah foto: public/komoditas/<kode>.webp.
+ * Semua dari Pexels (lisensi Pexels: bebas dipakai, atribusi tidak wajib tetapi
+ * dicantumkan di sini dan di README). Dipotong persegi 560px, WebP.
+ */
+export const FOTO_KOMODITAS: Record<KodeKomoditas, { fotografer: string; sumber: string }> = {
+  cabai_rawit_merah: { fotografer: "Terrance Barksdale", sumber: "https://www.pexels.com/photo/21273622/" },
+  cabai_merah_keriting: { fotografer: "Mark Stebnicki", sumber: "https://www.pexels.com/photo/2893882/" },
+  tomat: { fotografer: "Engin Akyurt", sumber: "https://www.pexels.com/photo/10112127/" },
+  kentang: { fotografer: "Michael Burrows", sumber: "https://www.pexels.com/photo/7129145/" },
+  kubis: { fotografer: "freestocks.org", sumber: "https://www.pexels.com/photo/134877/" },
+  wortel: { fotografer: "Javier Balseiro", sumber: "https://www.pexels.com/photo/20371247/" },
+  bawang_merah: { fotografer: "Miguel Á. Padriñán", sumber: "https://www.pexels.com/photo/144206/" },
+};
+
+/** Path foto komoditas dari nama yang tampil di UI (mis. "Tomat"), atau null. */
+export function fotoKomoditas(nama: string): string | null {
+  const k = DAFTAR_KOMODITAS.find((x) => x.nama.toLowerCase() === nama.trim().toLowerCase());
+  return k ? `/komoditas/${k.kode}.webp` : null;
+}

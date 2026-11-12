@@ -1,6 +1,8 @@
 // Ilustrasi hero: ladang cabai Garut saat senja. SVG buatan sendiri, dekoratif (aria-hidden).
 
+import Image from "next/image";
 import { useId } from "react";
+import { fotoKomoditas } from "@/lib/komoditas";
 
 const DAUN = ["#a3b385", "#8c9d6c", "#b7c49a"];
 
@@ -316,13 +318,27 @@ function SusunanKomoditas({ nama, n }: { nama: string; n: number }) {
   return null;
 }
 
+// Potongan foto berbeda per listing (zoom + titik fokus), supaya banyak listing
+// dengan komoditas sama tidak tampil kembar di grid katalog.
+const VARIASI_FOTO: [number, string][] = [
+  [1, "center"],
+  [1.25, "top left"],
+  [1.2, "bottom right"],
+  [1.3, "top right"],
+  [1.15, "bottom left"],
+  [1.35, "center"],
+];
+
 function angkaDari(benih: string): number {
   let h = 0;
   for (const c of benih) h = (h * 31 + c.charCodeAt(0)) >>> 0;
   return h;
 }
 
-/** Gambar pengganti foto listing: gambar sesuai komoditas, atau tunas untuk komoditas lain. */
+/**
+ * Gambar pengganti saat penjual tidak mengunggah foto: foto komoditas (lib/komoditas.ts),
+ * atau ilustrasi kalau nama komoditas tidak dikenal.
+ */
 export function GambarKomoditas({
   nama,
   benih = "",
@@ -336,6 +352,24 @@ export function GambarKomoditas({
   const keriting = /keriting/i.test(nama); // cabai merah keriting: lebih panjang, merah tua
   const idLatar = useId();
   const n = angkaDari(benih);
+  const foto = fotoKomoditas(nama);
+  if (foto) {
+    const [skala, titik] = VARIASI_FOTO[n % VARIASI_FOTO.length];
+    return (
+      <span aria-hidden className={`block overflow-hidden bg-pasir ${className}`}>
+        <Image
+          src={foto}
+          alt=""
+          fill
+          sizes="(min-width: 1024px) 240px, 50vw"
+          className="object-cover"
+          // Sedikit dihangatkan supaya senada dengan palet krem/terakota.
+          style={{ transform: `scale(${skala})`, transformOrigin: titik, filter: "saturate(0.92) sepia(0.1)" }}
+        />
+        <span className="absolute inset-0 bg-gradient-to-t from-[#573d21]/20 via-transparent to-[#f7e3c6]/10" />
+      </span>
+    );
+  }
   const [terang, gelap, lingkar] = LATAR_KOMODITAS[n % 3];
   const susunan = SUSUNAN_CABAI[Math.floor(n / 3) % 3];
   return (
