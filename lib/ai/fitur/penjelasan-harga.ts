@@ -25,7 +25,10 @@ export interface FaktaHarga {
 
 export function faktaDari(p: Prediksi): FaktaHarga {
   const titik = p.prediksi_petani.find((t) => t.tanggal === p.minggu_panen) ?? p.prediksi_petani[0];
-  const persen = Math.round(Math.abs(p.perubahan) * 100);
+  // Format sama dengan badge di KartuHarga (1 desimal, koma), supaya kalimat AI
+  // dan badge tidak menampilkan angka berbeda ("1%" vs "1,4%").
+  const nilaiPersen = Math.abs(p.perubahan) * 100;
+  const persen = nilaiPersen.toLocaleString("id-ID", { maximumFractionDigits: 1 });
   return {
     hargaSekarang: formatRupiah(p.harga_terakhir.petani_perkiraan),
     mingguPanen: `${tanggalPendek(titik.tanggal)}–${tanggalPendek(tambahHari(titik.tanggal, 6))}`,
@@ -33,7 +36,7 @@ export function faktaDari(p: Prediksi): FaktaHarga {
     bawah: formatRupiah(titik.bawah),
     atas: formatRupiah(titik.atas),
     persen: `${persen}%`,
-    arah: persen < 1 ? "stabil" : p.perubahan > 0 ? "naik" : "turun",
+    arah: nilaiPersen < 0.5 ? "stabil" : p.perubahan > 0 ? "naik" : "turun",
     saran: p.saran,
   };
 }
