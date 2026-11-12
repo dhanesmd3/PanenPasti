@@ -1,7 +1,7 @@
 import Link from "next/link";
 import { Suspense } from "react";
+import { MenuAkun } from "@/components/akun/MenuAkun";
 import { LoncengNotifikasi } from "@/components/LoncengNotifikasi";
-import { TombolKeluar } from "@/components/pembeli/NavPembeli";
 import { NavAtas, NavBawah } from "@/components/penjual/NavPenjual";
 
 // Kerangka sama dengan sisi pembeli (header, isi, navigasi bawah), tanpa kotak cari:
@@ -25,7 +25,9 @@ export default function Layout({ children }: LayoutProps<"/penjual">) {
               <Suspense>
                 <LoncengNotifikasi />
               </Suspense>
-              <TombolKeluar />
+              <Suspense fallback={<span className="size-10 rounded-full bg-pasir" />}>
+                <MenuAkun peran="penjual" />
+              </Suspense>
             </div>
           </div>
         </div>

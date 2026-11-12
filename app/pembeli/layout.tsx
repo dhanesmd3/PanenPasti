@@ -1,7 +1,8 @@
 import Link from "next/link";
 import { Suspense } from "react";
+import { MenuAkun } from "@/components/akun/MenuAkun";
 import { LoncengNotifikasi } from "@/components/LoncengNotifikasi";
-import { NavAtas, NavBawah, TombolKeluar } from "@/components/pembeli/NavPembeli";
+import { NavAtas, NavBawah } from "@/components/pembeli/NavPembeli";
 import { Ikon } from "@/components/ui/Ikon";
 
 function KotakCari({ id, className = "" }: { id: string; className?: string }) {
@@ -39,7 +40,9 @@ export default function Layout({ children }: LayoutProps<"/pembeli">) {
             <Suspense>
               <LoncengNotifikasi />
             </Suspense>
-            <TombolKeluar />
+            <Suspense fallback={<span className="size-10 rounded-full bg-pasir" />}>
+              <MenuAkun peran="pembeli" />
+            </Suspense>
           </div>
         </div>
         <div className="px-4 pb-3 md:hidden">
