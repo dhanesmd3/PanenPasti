@@ -9,6 +9,7 @@ import { Galat, Kosong, Memuat } from "@/components/ui/Keadaan";
 import { ambilJson, useMuat, usePeranSaya } from "@/lib/klien";
 import { BERANDA } from "@/lib/supabase/akses";
 import { tujuanNotifikasi, waktuLalu } from "@/lib/notifikasi";
+import { Logo } from "@/components/ui/Logo";
 
 const TAMPILAN: Record<TipeNotifikasi, { ikon: NamaIkon; warna: string }> = {
   pesanan_baru: { ikon: "paket", warna: "bg-sage text-[#4c5a2c]" },
@@ -30,8 +31,8 @@ export function HeaderNotifikasi() {
         >
           <Ikon nama="kembali" />
         </Link>
-        <Link href={beranda} className="font-serif text-2xl leading-none">
-          Panen<span className="text-daun italic">Pasti</span>
+        <Link href={beranda} className="leading-none">
+          <Logo />
         </Link>
       </div>
     </header>

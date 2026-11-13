@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { Logo } from "@/components/ui/Logo";
 
 const kelasMenu =
   "label-cetak rounded-full px-3.5 py-2 text-sm text-redup transition hover:bg-pasir/50 hover:text-teks";
@@ -19,8 +20,8 @@ export default function Layout({ children }: LayoutProps<"/">) {
               Tentang
             </Link>
           </nav>
-          <Link href="/" className="col-start-2 font-serif text-2xl leading-none">
-            Panen<span className="text-daun italic">Pasti</span>
+          <Link href="/" className="col-start-2 leading-none">
+            <Logo />
           </Link>
           <nav className="flex items-center justify-end gap-1">
             <Link href="/masuk" className={kelasMenu}>

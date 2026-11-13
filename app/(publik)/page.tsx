@@ -4,6 +4,7 @@ import { kelasTombol } from "@/components/ui/Button";
 import { IlustrasiLadang } from "@/components/ui/IlustrasiLadang";
 import { Gelombang } from "@/components/ui/Gelombang";
 import { Ikon, type NamaIkon } from "@/components/ui/Ikon";
+import { Logo } from "@/components/ui/Logo";
 
 const BUKTI = [
   {
@@ -194,8 +195,8 @@ export default function Page() {
       </section>
 
       <footer className="mx-auto flex w-full max-w-6xl flex-col items-center gap-2 px-4 py-10 text-center text-sm text-redup">
-        <p className="font-serif text-2xl text-teks">
-          Panen<span className="text-daun italic">Pasti</span>
+        <p>
+          <Logo className="text-[2rem]" />
         </p>
         <p>
           © 2026 PanenPasti ·{" "}

@@ -5,6 +5,7 @@ import { LoncengNotifikasi } from "@/components/LoncengNotifikasi";
 import { Tutorial } from "@/components/Tutorial";
 import { NavAtas, NavBawah } from "@/components/pembeli/NavPembeli";
 import { Ikon } from "@/components/ui/Ikon";
+import { Logo } from "@/components/ui/Logo";
 
 function KotakCari({ id, className = "" }: { id: string; className?: string }) {
   return (
@@ -30,8 +31,8 @@ export default function Layout({ children }: LayoutProps<"/pembeli">) {
     <div className="flex flex-1 flex-col pb-24 lg:pb-12">
       <header className="sticky top-0 z-20 border-b border-garis/70 bg-kartu/95 backdrop-blur">
         <div className="mx-auto flex h-16 max-w-6xl items-center gap-4 px-4">
-          <Link href="/pembeli" className="shrink-0 font-serif text-2xl leading-none">
-            Panen<span className="text-daun italic">Pasti</span>
+          <Link href="/pembeli" className="shrink-0 leading-none">
+            <Logo />
           </Link>
           <KotakCari id="q-cari-lebar" className="hidden flex-1 md:block" />
           <Suspense>
