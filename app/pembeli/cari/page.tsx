@@ -9,6 +9,7 @@ import { Button } from "@/components/ui/Button";
 import { Field, Input, kelasInput } from "@/components/ui/Input";
 import { Galat, Kosong, MemuatGrid } from "@/components/ui/Keadaan";
 import { KartuMatching } from "@/components/pembeli/KartuMatching";
+import { dalamRentangHarga, hargaBerlaku, SaringHarga } from "@/components/pembeli/listing";
 import { IlustrasiLadang } from "@/components/ui/IlustrasiLadang";
 import { ambilJson, useKecamatan, useKomoditas } from "@/lib/klien";
 import { buatSupabaseBrowser } from "@/lib/supabase/client";
@@ -50,6 +51,12 @@ function CariPemasok({ teksAwal }: { teksAwal: string }) {
     hasil: HasilMatching[] | null;
     kebutuhanId: string | null;
   }>({ memuat: false, galat: null, hasil: null, kebutuhanId: null });
+  const [hargaMin, setHargaMin] = useState("");
+  const [hargaMaks, setHargaMaks] = useState("");
+  const [urutHarga, setUrutHarga] = useState(false);
+  const tampil = (cari.hasil ?? [])
+    .filter((h) => dalamRentangHarga(h.listing, hargaMin, hargaMaks))
+    .sort((a, b) => (urutHarga ? hargaBerlaku(a.listing) - hargaBerlaku(b.listing) : 0));
 
   async function isiDenganAi() {
     setAi({ memuat: true, pesan: null, label: null });
@@ -214,9 +221,35 @@ function CariPemasok({ teksAwal }: { teksAwal: string }) {
             <Kosong judul="Belum ada panen yang cocok">Coba geser tanggal atau kurangi jumlah.</Kosong>
           ) : cari.hasil ? (
             <section className="flex flex-col gap-3">
-              <h2 className="font-serif text-xl">{cari.hasil.length} pemasok cocok, skor tertinggi dulu</h2>
+              <div className="flex flex-col gap-3 rounded-2xl bg-kartu p-4 shadow-sm sm:flex-row sm:items-end">
+                <div className="flex-1">
+                  <SaringHarga
+                    min={hargaMin}
+                    maks={hargaMaks}
+                    ubah={(min, maks) => {
+                      setHargaMin(min);
+                      setHargaMaks(maks);
+                    }}
+                  />
+                </div>
+                <Field label="Urutkan" htmlFor="urut">
+                  <select
+                    id="urut"
+                    value={urutHarga ? "murah" : "skor"}
+                    onChange={(e) => setUrutHarga(e.target.value === "murah")}
+                    className={kelasInput}
+                  >
+                    <option value="skor">Paling cocok</option>
+                    <option value="murah">Harga termurah</option>
+                  </select>
+                </Field>
+              </div>
+              <h2 className="font-serif text-xl">
+                {tampil.length} pemasok cocok, {urutHarga ? "harga termurah" : "skor tertinggi"} dulu
+              </h2>
+              {!tampil.length && <Kosong judul="Tidak ada pemasok di kisaran harga ini">Coba perlebar kisaran harga.</Kosong>}
               <ul className="grid gap-4 *:min-w-0 sm:grid-cols-2">
-                {cari.hasil.map((h) => (
+                {tampil.map((h) => (
                   <li key={h.listing.id}>
                     <KartuMatching
                       hasil={h}
