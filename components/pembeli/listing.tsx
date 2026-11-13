@@ -4,6 +4,7 @@ import type { Kecamatan, Listing, ProfilPublik } from "@/types";
 import { Badge } from "@/components/ui/Badge";
 import { Ikon } from "@/components/ui/Ikon";
 import { GambarKomoditas } from "@/components/ui/IlustrasiLadang";
+import { kelasInput } from "@/components/ui/Input";
 import { KOLOM_LISTING_MATCH } from "@/lib/kandidat";
 import { formatKg, formatRupiah } from "@/lib/format";
 import { pesanSupabase, useNamaKomoditas } from "@/lib/klien";
@@ -60,6 +61,54 @@ export async function ambilListingMendatang({
 /** Harga yang dibayar pembeli saat ini (harga surplus kalau sedang surplus). */
 export function hargaBerlaku(l: Listing): number {
   return l.is_surplus && l.harga_surplus != null ? l.harga_surplus : l.harga_per_kg;
+}
+
+/** min/maks kosong ("") = tanpa batas. */
+export function dalamRentangHarga(l: Listing, min: string, maks: string): boolean {
+  const h = hargaBerlaku(l);
+  return (!min || h >= Number(min)) && (!maks || h <= Number(maks));
+}
+
+/** Dua isian Rp/kg untuk menyaring kisaran harga. */
+export function SaringHarga({
+  min,
+  maks,
+  ubah,
+}: {
+  min: string;
+  maks: string;
+  ubah: (min: string, maks: string) => void;
+}) {
+  return (
+    <fieldset className="flex flex-col gap-1">
+      <legend className="label-cetak mb-1 text-sm text-redup">Kisaran harga (Rp/kg)</legend>
+      <div className="flex items-center gap-2">
+        <input
+          type="number"
+          inputMode="numeric"
+          min={0}
+          step={500}
+          aria-label="Harga terendah per kg"
+          placeholder="Min"
+          value={min}
+          onChange={(e) => ubah(e.target.value, maks)}
+          className={kelasInput}
+        />
+        <span aria-hidden>–</span>
+        <input
+          type="number"
+          inputMode="numeric"
+          min={0}
+          step={500}
+          aria-label="Harga tertinggi per kg"
+          placeholder="Maks"
+          value={maks}
+          onChange={(e) => ubah(min, e.target.value)}
+          className={kelasInput}
+        />
+      </div>
+    </fieldset>
+  );
 }
 
 export function namaPenjual(p: ProfilPublik | null): string {
