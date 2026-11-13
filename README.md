@@ -125,6 +125,7 @@ _(Sebutkan AI coding assistant yang dipakai dan bagian yang dibantu, sesuai kete
 | --- | --- | --- |
 | [Next.js](https://nextjs.org) via `create-next-app` | Starter project | MIT |
 | _(isi dataset harga)_ | Data harga historis | _(isi)_ |
+| Foto komoditas dari [Pexels](https://www.pexels.com) (`public/komoditas/`): [cabai rawit](https://www.pexels.com/photo/21273622/) oleh Terrance Barksdale, [cabai merah keriting](https://www.pexels.com/photo/2893882/) oleh Mark Stebnicki, [tomat](https://www.pexels.com/photo/10112127/) oleh Engin Akyurt, [kentang](https://www.pexels.com/photo/7129145/) oleh Michael Burrows, [kubis](https://www.pexels.com/photo/134877/) oleh freestocks.org, [wortel](https://www.pexels.com/photo/20371247/) oleh Javier Balseiro, [bawang merah](https://www.pexels.com/photo/144206/) oleh Miguel Á. Padriñán | Gambar pengganti di katalog saat penjual belum mengunggah foto (dipotong persegi, dikompres ke WebP) | [Lisensi Pexels](https://www.pexels.com/license/): bebas dipakai, atribusi tidak wajib |
 | _(isi library/ikon/aset lain)_ | | |
 
 ## Dokumen

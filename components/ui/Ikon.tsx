@@ -30,6 +30,9 @@ const PATH = {
   naik: ["M7 17 17 7", "M9 7h8v8"],
   turun: ["M7 7l10 10", "M17 9v8H9"],
   putar: ["M12 21a9 9 0 1 0 0-18 9 9 0 0 0 0 18z", "M10 8.5v7l5.5-3.5z"],
+  atur: ["M4 7h9", "M17 7h3", "M15 5v4", "M4 17h3", "M11 17h9", "M9 15v4"],
+  gembok: ["M6 11h12v9H6z", "M8.5 11V8a3.5 3.5 0 0 1 7 0v3", "M12 15v2"],
+  huruf: ["M3 19 8 5l5 14", "M5 14h6", "M14 19l3.5-9 3.5 9", "M15.3 16h4.4"],
 } as const;
 
 export type NamaIkon = keyof typeof PATH;

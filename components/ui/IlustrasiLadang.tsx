@@ -1,6 +1,8 @@
 // Ilustrasi hero: ladang cabai Garut saat senja. SVG buatan sendiri, dekoratif (aria-hidden).
 
+import Image from "next/image";
 import { useId } from "react";
+import { fotoKomoditas } from "@/lib/komoditas";
 
 const DAUN = ["#a3b385", "#8c9d6c", "#b7c49a"];
 
@@ -199,13 +201,144 @@ const SUSUNAN_CABAI: [number, number, number, number, string][][] = [
   ],
 ];
 
+// --- Komoditas selain cabai (lib/komoditas.ts). Bentuk sederhana, palet hangat yang sama.
+
+type Pos = { x: number; y: number; r?: number; s?: number };
+const ubah = ({ x, y, r = 0, s = 1 }: Pos) => `translate(${x} ${y}) rotate(${r}) scale(${s})`;
+
+function Tomat(p: Pos) {
+  return (
+    <g transform={ubah(p)}>
+      <ellipse cx="0" cy="0" rx="25" ry="22" fill="#cf4a2e" />
+      <ellipse cx="-9" cy="-8" rx="7" ry="4" fill="#fff" opacity="0.25" />
+      <path d="M0 -26 L3 -19 L11 -21 L5 -15 L9 -9 L0 -13 L-9 -9 L-5 -15 L-11 -21 L-3 -19 Z" fill="#6f7f52" />
+    </g>
+  );
+}
+
+function Kentang(p: Pos) {
+  return (
+    <g transform={ubah(p)}>
+      <path d="M-28 0 C-28 -16 -11 -22 4 -20 C21 -18 29 -8 27 5 C25 17 9 21 -6 20 C-21 19 -28 12 -28 0 Z" fill="#c9a06a" />
+      <path d="M-18 -8 C-10 -14 4 -15 12 -11" stroke="#e0c08f" strokeWidth="3" fill="none" strokeLinecap="round" />
+      <circle cx="-10" cy="2" r="1.8" fill="#8a6338" />
+      <circle cx="9" cy="-3" r="1.6" fill="#8a6338" />
+      <circle cx="3" cy="10" r="1.6" fill="#8a6338" />
+    </g>
+  );
+}
+
+function Kubis(p: Pos) {
+  return (
+    <g transform={ubah(p)}>
+      <circle r="46" fill="#93ad69" />
+      <path d="M-40 14 C-34 -30 34 -30 40 14" stroke="#7d9752" strokeWidth="3" fill="none" />
+      <path d="M-30 22 C-26 -14 26 -14 30 22" stroke="#7d9752" strokeWidth="3" fill="none" />
+      <circle cy="6" r="20" fill="#c3d69a" />
+      <path d="M0 -14 V 26 M0 0 L-10 -8 M0 8 L10 0" stroke="#93ad69" strokeWidth="2.5" fill="none" strokeLinecap="round" />
+    </g>
+  );
+}
+
+function Wortel(p: Pos) {
+  return (
+    <g transform={ubah(p)}>
+      <path
+        d="M0 -2 C-6 -16 -10 -22 -13 -32 M0 -2 C0 -16 2 -24 0 -36 M0 -2 C6 -14 10 -20 15 -28"
+        stroke="#6f7f52"
+        strokeWidth="4"
+        strokeLinecap="round"
+        fill="none"
+      />
+      <path d="M-10 0 C-10 -5 10 -5 10 0 L2 66 C1 70 -1 70 -2 66 Z" fill="#e2852f" />
+      <path d="M-7 16 h6 M2 30 h5 M-5 44 h5" stroke="#c26a1c" strokeWidth="2" strokeLinecap="round" />
+    </g>
+  );
+}
+
+function Bawang(p: Pos) {
+  return (
+    <g transform={ubah(p)}>
+      <path d="M0 -28 C4 -15 21 -9 21 8 C21 22 11 28 0 28 C-11 28 -21 22 -21 8 C-21 -9 -4 -15 0 -28 Z" fill="#a8445a" />
+      <path d="M0 -26 C-4 -10 -4 12 0 27" stroke="#7d2a3e" strokeWidth="1.5" fill="none" opacity="0.5" />
+      <path d="M-8 -2 C-6 -10 -3 -14 -2 -18" stroke="#fff" strokeWidth="3" fill="none" opacity="0.2" strokeLinecap="round" />
+      <path d="M-3 28 l-3 6 M0 28 v7 M3 28 l3 6" stroke="#d9c3a5" strokeWidth="1.5" strokeLinecap="round" />
+    </g>
+  );
+}
+
+/** Gambar per komoditas; null = pakai tunas (komoditas lain). Dua susunan, dipilih dari benih. */
+function SusunanKomoditas({ nama, n }: { nama: string; n: number }) {
+  const v = n % 2;
+  if (/tomat/i.test(nama)) {
+    return (
+      <g>
+        <Daun x={36} y={140} r={-20} s={0.9} i={n} />
+        {(v ? [[78, 86, 1], [124, 92, 0.9], [100, 128, 1.1]] : [[90, 100, 1.2], [132, 112, 0.85]]).map(([x, y, s]) => (
+          <Tomat key={`${x}-${y}`} x={x} y={y} s={s} />
+        ))}
+      </g>
+    );
+  }
+  if (/kentang/i.test(nama)) {
+    return (
+      <g>
+        {(v ? [[76, 92, -12, 1], [126, 104, 18, 0.9], [96, 132, 4, 1.1]] : [[88, 100, -6, 1.25], [134, 124, 22, 0.85], [62, 130, 10, 0.8]]).map(
+          ([x, y, r, s]) => <Kentang key={`${x}-${y}`} x={x} y={y} r={r} s={s} />,
+        )}
+      </g>
+    );
+  }
+  if (/kubis|kol\b/i.test(nama)) {
+    return (
+      <g>
+        <Daun x={30} y={150} r={-25} s={0.9} i={n} />
+        <Kubis x={100} y={104} s={v ? 1 : 1.1} />
+      </g>
+    );
+  }
+  if (/wortel/i.test(nama)) {
+    return (
+      <g>
+        {(v ? [[74, 62, -24, 1], [102, 56, 0, 1.1], [128, 64, 22, 0.95]] : [[88, 58, -12, 1.15], [118, 62, 14, 1.05]]).map(
+          ([x, y, r, s]) => <Wortel key={`${x}-${y}`} x={x} y={y} r={r} s={s} />,
+        )}
+      </g>
+    );
+  }
+  if (/bawang/i.test(nama)) {
+    return (
+      <g>
+        {(v ? [[80, 94, -14, 1], [122, 96, 12, 0.95], [100, 124, 0, 1.15]] : [[90, 100, -8, 1.3], [132, 112, 16, 0.9]]).map(
+          ([x, y, r, s]) => <Bawang key={`${x}-${y}`} x={x} y={y} r={r} s={s} />,
+        )}
+      </g>
+    );
+  }
+  return null;
+}
+
+// Potongan foto berbeda per listing (zoom + titik fokus), supaya banyak listing
+// dengan komoditas sama tidak tampil kembar di grid katalog.
+const VARIASI_FOTO: [number, string][] = [
+  [1, "center"],
+  [1.25, "top left"],
+  [1.2, "bottom right"],
+  [1.3, "top right"],
+  [1.15, "bottom left"],
+  [1.35, "center"],
+];
+
 function angkaDari(benih: string): number {
   let h = 0;
   for (const c of benih) h = (h * 31 + c.charCodeAt(0)) >>> 0;
   return h;
 }
 
-/** Gambar pengganti foto listing: cabai di atas daun, atau tunas untuk komoditas lain. */
+/**
+ * Gambar pengganti saat penjual tidak mengunggah foto: foto komoditas (lib/komoditas.ts),
+ * atau ilustrasi kalau nama komoditas tidak dikenal.
+ */
 export function GambarKomoditas({
   nama,
   benih = "",
@@ -216,8 +349,27 @@ export function GambarKomoditas({
   className?: string;
 }) {
   const cabai = /cabai|cabe/i.test(nama);
+  const keriting = /keriting/i.test(nama); // cabai merah keriting: lebih panjang, merah tua
   const idLatar = useId();
   const n = angkaDari(benih);
+  const foto = fotoKomoditas(nama);
+  if (foto) {
+    const [skala, titik] = VARIASI_FOTO[n % VARIASI_FOTO.length];
+    return (
+      <span aria-hidden className={`block overflow-hidden bg-pasir ${className}`}>
+        <Image
+          src={foto}
+          alt=""
+          fill
+          sizes="(min-width: 1024px) 240px, 50vw"
+          className="object-cover"
+          // Sedikit dihangatkan supaya senada dengan palet krem/terakota.
+          style={{ transform: `scale(${skala})`, transformOrigin: titik, filter: "saturate(0.92) sepia(0.1)" }}
+        />
+        <span className="absolute inset-0 bg-gradient-to-t from-[#573d21]/20 via-transparent to-[#f7e3c6]/10" />
+      </span>
+    );
+  }
   const [terang, gelap, lingkar] = LATAR_KOMODITAS[n % 3];
   const susunan = SUSUNAN_CABAI[Math.floor(n / 3) % 3];
   return (
@@ -235,9 +387,11 @@ export function GambarKomoditas({
           <Daun x={40} y={135} r={-18} s={1.05} i={n} />
           <Daun x={60} y={150} r={-35} s={0.8} i={n + 2} />
           {susunan.map(([x, y, r, sk, warna]) => (
-            <Cabai key={`${x}-${y}`} x={x} y={y} r={r} s={sk} warna={warna} />
+            <Cabai key={`${x}-${y}`} x={x} y={y} r={r} s={keriting ? sk * 1.12 : sk} warna={keriting ? "#9e2a1c" : warna} />
           ))}
         </g>
+      ) : /tomat|kentang|kubis|kol\b|wortel|bawang/i.test(nama) ? (
+        <SusunanKomoditas nama={nama} n={n} />
       ) : (
         <g transform="translate(100 150)">
           <path d="M0 0 V -70" stroke="#6f7f52" strokeWidth="5" strokeLinecap="round" />

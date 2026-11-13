@@ -1,5 +1,6 @@
 import { randomUUID } from "node:crypto";
 import { afterAll, beforeAll, describe, expect, it } from "vitest";
+import { DAFTAR_KOMODITAS } from "@/lib/komoditas";
 import { DbUji, galatDari, KECAMATAN } from "./bantuan";
 
 let db: DbUji;
@@ -22,7 +23,7 @@ async function daftarMentah(meta: Record<string, unknown>, email?: string): Prom
 }
 
 describe("data referensi", () => {
-  it("memuat 72 kecamatan (42 Garut, 30 Bandung) dan komoditas cabai rawit merah", async () => {
+  it("memuat 72 kecamatan (42 Garut, 30 Bandung) dan semua komoditas di lib/komoditas.ts", async () => {
     const kec = await db.admin(
       "select kab_kota, count(*)::int as n from public.kecamatan group by kab_kota order by kab_kota",
     );
@@ -30,8 +31,8 @@ describe("data referensi", () => {
       { kab_kota: "Kab. Garut", n: 42 },
       { kab_kota: "Kota Bandung", n: 30 },
     ]);
-    const kom = await db.admin("select id, nama, satuan from public.komoditas");
-    expect(kom).toEqual([{ id: 1, nama: "Cabai Rawit Merah", satuan: "kg" }]);
+    const kom = await db.admin("select id, nama, satuan from public.komoditas order by id");
+    expect(kom).toEqual(DAFTAR_KOMODITAS.map((k) => ({ id: k.id, nama: k.nama, satuan: "kg" })));
   });
 
   it("bisa dibaca tanpa login, tetapi tidak bisa diubah", async () => {

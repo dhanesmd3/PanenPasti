@@ -3,10 +3,10 @@ import { bacaJson } from "@/lib/ai/respons";
 import { cariKecamatan } from "@/lib/data/statis";
 import { bangunKandidat, KOLOM_LISTING_MATCH, type BarisListingDb } from "@/lib/kandidat";
 import { cocokkan, MAKS_SELISIH_HARI } from "@/lib/matching";
-import { buatSupabaseServer, supabaseTerkonfigurasi } from "@/lib/supabase/server";
+import { sesiOpsional, supabaseTerkonfigurasi } from "@/lib/supabase/server";
 import { keNomorHari, tambahHari } from "@/lib/tanggal";
 
-// POST /api/match  Pemilik: D
+// POST /api/match  Pemilik: D  (wajib login; 401 untuk tamu)
 // Body: {
 //   komoditas_id: 1, jumlah_kg: 100, tgl_butuh: "2026-11-28",
 //   kecamatan_id?: 3273230,          // lokasi pembeli; default: kecamatan di profil
@@ -43,19 +43,21 @@ export async function POST(request: Request) {
   if (!supabaseTerkonfigurasi()) {
     return Response.json({ error: "Database belum dikonfigurasi" }, { status: 503 });
   }
-  const supabase = await buatSupabaseServer();
+  // Tabel listings hanya bisa dibaca pengguna yang login (RLS), jadi tamu
+  // langsung diberi 401 yang jelas, bukan 500 "permission denied".
+  const sesi = await sesiOpsional();
+  if (!sesi) {
+    return Response.json({ error: "Masuk terlebih dahulu" }, { status: 401 });
+  }
+  const { supabase } = sesi;
 
   // Lokasi pembeli: dari body, atau dari profil pengguna yang login.
   let kecamatanId = m.kecamatan_id;
   if (kecamatanId == null) {
-    const { data: auth } = await supabase.auth.getUser();
-    if (!auth.user) {
-      return Response.json({ error: "Masuk terlebih dahulu atau kirim kecamatan_id" }, { status: 401 });
-    }
     const { data: profil } = await supabase
       .from("profiles")
       .select("kecamatan_id")
-      .eq("id", auth.user.id)
+      .eq("id", sesi.userId)
       .single();
     kecamatanId = profil?.kecamatan_id ?? undefined;
   }

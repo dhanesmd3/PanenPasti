@@ -1,7 +1,13 @@
 {
-  "_keterangan": "DATA SIMULASI untuk demo PanenPasti. Semua nama, usaha, dan nomor HP fiktif. Tanggal panen ditulis sebagai offset hari dari tanggal seed (panen_dalam_hari) agar data demo tidak basi. Harga mengacu pada PIHPS Nov 2026: produsen Kab. Garut Rp60.000/kg, pedagang besar Kota Bandung Rp71.900/kg (lihat data/harga).",
+  "_keterangan": "DATA SIMULASI untuk demo PanenPasti. Semua nama, usaha, dan nomor HP fiktif. Tanggal panen ditulis sebagai offset hari dari tanggal seed (panen_dalam_hari) agar data demo tidak basi. Harga mengacu pada PIHPS Nov 2026: produsen Kab. Garut Rp60.000/kg, pedagang besar Kota Bandung Rp71.900/kg (lihat data/harga). Listing tanpa komoditas_id = cabai rawit merah (id 1). Harga komoditas lain hanya perkiraan untuk demo, bukan data resmi.",
   "komoditas": [
-    { "id": 1, "nama": "Cabai Rawit Merah", "satuan": "kg" }
+    { "id": 1, "nama": "Cabai Rawit Merah", "satuan": "kg" },
+    { "id": 2, "nama": "Cabai Merah Keriting", "satuan": "kg" },
+    { "id": 3, "nama": "Tomat", "satuan": "kg" },
+    { "id": 4, "nama": "Kentang", "satuan": "kg" },
+    { "id": 5, "nama": "Kubis", "satuan": "kg" },
+    { "id": 6, "nama": "Wortel", "satuan": "kg" },
+    { "id": 7, "nama": "Bawang Merah", "satuan": "kg" }
   ],
   "penjual": [
     {
@@ -12,7 +18,9 @@
       "no_hp": "6281200000101",
       "listing": [
         { "jumlah_kg": 500, "kualitas": "Super, merah merata", "panen_dalam_hari": 21, "harga_per_kg": 62000, "status": "estimasi" },
-        { "jumlah_kg": 150, "kualitas": "Sedang", "panen_dalam_hari": 3, "harga_per_kg": 58000, "status": "siap" }
+        { "jumlah_kg": 150, "kualitas": "Sedang", "panen_dalam_hari": 3, "harga_per_kg": 58000, "status": "siap" },
+        { "komoditas_id": 2, "jumlah_kg": 300, "kualitas": "Super", "panen_dalam_hari": 9, "harga_per_kg": 41000, "status": "estimasi" },
+        { "komoditas_id": 3, "jumlah_kg": 800, "kualitas": "Sedang", "panen_dalam_hari": 5, "harga_per_kg": 8500, "status": "siap" }
       ]
     },
     {
@@ -22,7 +30,9 @@
       "kecamatan_id": 3205160,
       "no_hp": "6281200000102",
       "listing": [
-        { "jumlah_kg": 800, "kualitas": "Super", "panen_dalam_hari": 14, "harga_per_kg": 61000, "status": "estimasi" }
+        { "jumlah_kg": 800, "kualitas": "Super", "panen_dalam_hari": 14, "harga_per_kg": 61000, "status": "estimasi" },
+        { "komoditas_id": 4, "jumlah_kg": 1500, "kualitas": "Super", "panen_dalam_hari": 16, "harga_per_kg": 14500, "status": "estimasi" },
+        { "komoditas_id": 6, "jumlah_kg": 600, "kualitas": "Super", "panen_dalam_hari": 11, "harga_per_kg": 7500, "status": "estimasi" }
       ]
     },
     {
@@ -33,7 +43,8 @@
       "no_hp": "6281200000103",
       "listing": [
         { "jumlah_kg": 300, "kualitas": "Super", "panen_dalam_hari": 7, "harga_per_kg": 60000, "status": "siap" },
-        { "jumlah_kg": 400, "kualitas": "Sedang", "panen_dalam_hari": 28, "harga_per_kg": 59000, "status": "estimasi" }
+        { "jumlah_kg": 400, "kualitas": "Sedang", "panen_dalam_hari": 28, "harga_per_kg": 59000, "status": "estimasi" },
+        { "komoditas_id": 5, "jumlah_kg": 2000, "kualitas": "Sedang", "panen_dalam_hari": 4, "harga_per_kg": 4500, "status": "siap" }
       ]
     },
     {
@@ -43,7 +54,8 @@
       "kecamatan_id": 3205150,
       "no_hp": "6281200000104",
       "listing": [
-        { "jumlah_kg": 120, "kualitas": "Super", "panen_dalam_hari": 10, "harga_per_kg": 63000, "status": "estimasi" }
+        { "jumlah_kg": 120, "kualitas": "Super", "panen_dalam_hari": 10, "harga_per_kg": 63000, "status": "estimasi" },
+        { "komoditas_id": 7, "jumlah_kg": 250, "kualitas": "Super", "panen_dalam_hari": 20, "harga_per_kg": 31000, "status": "estimasi" }
       ]
     },
     {
@@ -53,7 +65,8 @@
       "kecamatan_id": 3205170,
       "no_hp": "6281200000105",
       "listing": [
-        { "jumlah_kg": 600, "kualitas": "Sedang", "panen_dalam_hari": 2, "harga_per_kg": 56000, "status": "siap", "is_surplus": true, "harga_surplus": 52000 }
+        { "jumlah_kg": 600, "kualitas": "Sedang", "panen_dalam_hari": 2, "harga_per_kg": 56000, "status": "siap", "is_surplus": true, "harga_surplus": 52000 },
+        { "komoditas_id": 2, "jumlah_kg": 400, "kualitas": "Sedang", "panen_dalam_hari": 6, "harga_per_kg": 39000, "status": "siap" }
       ]
     },
     {
@@ -63,7 +76,9 @@
       "kecamatan_id": 3205151,
       "no_hp": "6281200000106",
       "listing": [
-        { "jumlah_kg": 250, "kualitas": "Super", "panen_dalam_hari": 18, "harga_per_kg": 61500, "status": "estimasi" }
+        { "jumlah_kg": 250, "kualitas": "Super", "panen_dalam_hari": 18, "harga_per_kg": 61500, "status": "estimasi" },
+        { "komoditas_id": 4, "jumlah_kg": 1000, "kualitas": "Sedang", "panen_dalam_hari": 24, "harga_per_kg": 13500, "status": "estimasi" },
+        { "komoditas_id": 3, "jumlah_kg": 500, "kualitas": "Super", "panen_dalam_hari": 13, "harga_per_kg": 9000, "status": "estimasi" }
       ]
     },
     {
@@ -73,7 +88,8 @@
       "kecamatan_id": 3205161,
       "no_hp": "6281200000107",
       "listing": [
-        { "jumlah_kg": 200, "kualitas": "Sedang", "panen_dalam_hari": 25, "harga_per_kg": 58500, "status": "estimasi" }
+        { "jumlah_kg": 200, "kualitas": "Sedang", "panen_dalam_hari": 25, "harga_per_kg": 58500, "status": "estimasi" },
+        { "komoditas_id": 6, "jumlah_kg": 700, "kualitas": "Sedang", "panen_dalam_hari": 8, "harga_per_kg": 7000, "status": "siap" }
       ]
     },
     {
@@ -83,7 +99,9 @@
       "kecamatan_id": 3205050,
       "no_hp": "6281200000108",
       "listing": [
-        { "jumlah_kg": 350, "kualitas": "Super", "panen_dalam_hari": 12, "harga_per_kg": 59500, "status": "estimasi" }
+        { "jumlah_kg": 350, "kualitas": "Super", "panen_dalam_hari": 12, "harga_per_kg": 59500, "status": "estimasi" },
+        { "komoditas_id": 5, "jumlah_kg": 1200, "kualitas": "Super", "panen_dalam_hari": 15, "harga_per_kg": 5000, "status": "estimasi" },
+        { "komoditas_id": 7, "jumlah_kg": 300, "kualitas": "Sedang", "panen_dalam_hari": 27, "harga_per_kg": 29500, "status": "estimasi" }
       ]
     }
   ],
