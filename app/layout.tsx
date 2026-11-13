@@ -1,8 +1,9 @@
 import type { Metadata } from "next";
-import { Barlow_Condensed, Fraunces } from "next/font/google";
+import { Atkinson_Hyperlegible_Next, Fraunces } from "next/font/google";
 import "./globals.css";
 
-// Dua suara: serif untuk merek & teks bacaan, sans condensed untuk tombol, label, harga.
+// Serif hanya untuk judul & merek. Teks bacaan, tombol, label, dan harga memakai
+// Atkinson Hyperlegible: dirancang untuk pembaca berpenglihatan rendah (ramah lansia).
 const serif = Fraunces({
   variable: "--font-fraunces",
   subsets: ["latin"],
@@ -10,10 +11,9 @@ const serif = Fraunces({
   axes: ["SOFT", "opsz"],
 });
 
-const narrow = Barlow_Condensed({
-  variable: "--font-barlow-condensed",
+const sans = Atkinson_Hyperlegible_Next({
+  variable: "--font-atkinson",
   subsets: ["latin"],
-  weight: ["400", "500", "600", "700"],
 });
 
 export const metadata: Metadata = {
@@ -24,7 +24,7 @@ export const metadata: Metadata = {
 
 export default function RootLayout({ children }: LayoutProps<"/">) {
   return (
-    <html lang="id" className={`${serif.variable} ${narrow.variable} h-full antialiased`}>
+    <html lang="id" className={`${serif.variable} ${sans.variable} h-full antialiased`}>
       <body className="min-h-full flex flex-col">{children}</body>
     </html>
   );
