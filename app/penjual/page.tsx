@@ -2,6 +2,7 @@
 
 import Link from "next/link";
 import type { PesananLengkap } from "@/types";
+import { DaftarUlasan } from "@/components/Ulasan";
 import { kelasTombol } from "@/components/ui/Button";
 import { Ikon } from "@/components/ui/Ikon";
 import { IlustrasiLadang } from "@/components/ui/IlustrasiLadang";
@@ -176,6 +177,15 @@ export default function Page() {
           </ul>
         )}
       </section>
+
+      {profil.data && (
+        <section aria-labelledby="judul-ulasan" className="flex flex-col gap-4">
+          <h2 id="judul-ulasan" className="font-serif text-2xl md:text-3xl">
+            Ulasan pembeli
+          </h2>
+          <DaftarUlasan penjualId={profil.data.id} bisaBalas />
+        </section>
+      )}
     </>
   );
 }

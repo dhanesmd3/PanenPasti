@@ -32,6 +32,7 @@ describe("skema public", () => {
       "notifikasi",
       "orders",
       "profiles",
+      "ulasan",
     ]);
     expect(tabel.filter((t) => !t.rls)).toEqual([]);
   });
@@ -72,6 +73,7 @@ describe("skema public", () => {
       { table_name: "listings", hak: "DELETE,INSERT,SELECT,UPDATE" },
       { table_name: "notifikasi", hak: "SELECT" },
       { table_name: "orders", hak: "SELECT" },
+      { table_name: "ulasan", hak: "SELECT" },
       // profiles: tidak ada hak tingkat tabel, hanya hak per kolom (di bawah).
     ]);
 
@@ -79,12 +81,14 @@ describe("skema public", () => {
       `select table_name, privilege_type, string_agg(column_name, ',' order by column_name) as kolom
        from information_schema.column_privileges
        where table_schema = 'public' and grantee = 'authenticated'
-         and table_name in ('profiles', 'notifikasi') and privilege_type <> 'SELECT'
+         and table_name in ('profiles', 'notifikasi', 'ulasan') and privilege_type <> 'SELECT'
        group by table_name, privilege_type order by table_name, privilege_type`,
     );
     expect(kolom).toEqual([
       { table_name: "notifikasi", privilege_type: "UPDATE", kolom: "dibaca" },
       { table_name: "profiles", privilege_type: "UPDATE", kolom: "kecamatan_id,nama,nama_usaha,no_hp" },
+      { table_name: "ulasan", privilege_type: "INSERT", kolom: "bintang,komentar,order_id" },
+      { table_name: "ulasan", privilege_type: "UPDATE", kolom: "balasan" },
     ]);
 
     const bacaProfil = await db.admin(

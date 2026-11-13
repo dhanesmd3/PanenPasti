@@ -3,7 +3,14 @@
 import { useState } from "react";
 import { Field, kelasInput } from "@/components/ui/Input";
 import { Galat, Kosong, MemuatGrid } from "@/components/ui/Keadaan";
-import { ambilListingMendatang, hargaBerlaku, KartuListing, KELAS_GRID_PRODUK } from "@/components/pembeli/listing";
+import {
+  ambilListingMendatang,
+  dalamRentangHarga,
+  hargaBerlaku,
+  KartuListing,
+  KELAS_GRID_PRODUK,
+  SaringHarga,
+} from "@/components/pembeli/listing";
 import { useKecamatan, useKomoditas, useMuat } from "@/lib/klien";
 import { hariIniWib, tambahHari } from "@/lib/tanggal";
 
@@ -20,6 +27,8 @@ export default function Page() {
   const [sampai, setSampai] = useState(tambahHari(hariIni, 60));
   const [kecId, setKecId] = useState("");
   const [urut, setUrut] = useState<keyof typeof URUTAN>("panen");
+  const [hargaMin, setHargaMin] = useState("");
+  const [hargaMaks, setHargaMaks] = useState("");
   const kecamatan = useKecamatan();
   const komoditas = useKomoditas();
 
@@ -31,6 +40,7 @@ export default function Page() {
   // shortcut: filter kecamatan & urutan dilakukan di browser (maks 200 listing), pindah ke query kalau listing bertambah banyak.
   const tampil = (data ?? [])
     .filter((d) => !kecId || String(d.penjual?.kecamatan_id) === kecId)
+    .filter((d) => dalamRentangHarga(d.listing, hargaMin, hargaMaks))
     .sort((a, b) =>
       urut === "murah"
         ? hargaBerlaku(a.listing) - hargaBerlaku(b.listing)
@@ -52,9 +62,9 @@ export default function Page() {
 
       <div className="grid gap-6 lg:grid-cols-[260px_minmax(0,1fr)]">
         <aside className="lg:sticky lg:top-24 lg:self-start">
-          <div className="grid grid-cols-2 gap-4 rounded-2xl bg-kartu p-5 shadow-sm lg:grid-cols-1">
-            <p className="col-span-2 font-serif text-lg lg:col-span-1">Saring</p>
-            <div className="col-span-2 lg:col-span-1">
+          <div className="grid gap-4 rounded-2xl bg-kartu p-5 shadow-sm sm:grid-cols-2 lg:grid-cols-1">
+            <p className="font-serif text-lg sm:col-span-2 lg:col-span-1">Saring</p>
+            <div className="sm:col-span-2 lg:col-span-1">
               <Field label="Komoditas" htmlFor="komoditas">
                 <select
                   id="komoditas"
@@ -83,7 +93,7 @@ export default function Page() {
                 className={kelasInput}
               />
             </Field>
-            <div className="col-span-2 lg:col-span-1">
+            <div className="sm:col-span-2 lg:col-span-1">
               <Field label="Kecamatan penjual" htmlFor="kec">
                 <select id="kec" value={kecId} onChange={(e) => setKecId(e.target.value)} className={kelasInput}>
                   <option value="">Semua kecamatan</option>
@@ -94,6 +104,16 @@ export default function Page() {
                   ))}
                 </select>
               </Field>
+            </div>
+            <div className="sm:col-span-2 lg:col-span-1">
+              <SaringHarga
+                min={hargaMin}
+                maks={hargaMaks}
+                ubah={(min, maks) => {
+                  setHargaMin(min);
+                  setHargaMaks(maks);
+                }}
+              />
             </div>
           </div>
         </aside>
@@ -121,7 +141,7 @@ export default function Page() {
           ) : galat ? (
             <Galat pesan={galat} ulangi={muatUlang} />
           ) : tampil.length === 0 ? (
-            <Kosong judul="Belum ada panen di rentang ini">Coba perlebar rentang tanggal atau pilih semua kecamatan.</Kosong>
+            <Kosong judul="Belum ada panen di rentang ini">Coba perlebar rentang tanggal atau harga, atau pilih semua kecamatan.</Kosong>
           ) : (
             <ul className={KELAS_GRID_PRODUK.replace("xl:grid-cols-5", "xl:grid-cols-4")}>
               {tampil.map((d) => (

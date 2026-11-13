@@ -8,6 +8,7 @@ import { Button, kelasTombol } from "@/components/ui/Button";
 import { Galat, Kosong, Memuat } from "@/components/ui/Keadaan";
 import { FotoListing } from "@/components/pembeli/listing";
 import { PenjualPengganti } from "@/components/pembeli/PenjualPengganti";
+import { UlasanPesanan } from "@/components/Ulasan";
 import { Ikon } from "@/components/ui/Ikon";
 import { ambilJson, useMuat, useNamaKomoditas } from "@/lib/klien";
 import { formatKg, formatRupiah } from "@/lib/format";
@@ -117,6 +118,7 @@ function KartuPesanan({ p, setelahUbah }: { p: PesananLengkap; setelahUbah: () =
           <PenjualPengganti pesanan={p} />
         </section>
       )}
+      {p.status === "selesai" && <UlasanPesanan orderId={p.id} />}
       {galat && <Galat pesan={galat} />}
     </article>
   );
