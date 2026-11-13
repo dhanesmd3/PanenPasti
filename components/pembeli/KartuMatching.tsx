@@ -46,9 +46,9 @@ export function KartuMatching({
           style={{ background: `conic-gradient(${nada} ${skor * 3.6}deg, #e8d2bb 0deg)` }}
           title="Skor kecocokan"
         >
-          <span className="flex size-11 flex-col items-center justify-center rounded-full bg-kartu font-narrow leading-none">
+          <span className="flex size-14 flex-col items-center justify-center rounded-full bg-kartu font-narrow leading-none">
             <span className="text-lg font-bold">{Math.round(skor)}</span>
-            <span className="text-[9px] tracking-wider text-redup uppercase">cocok</span>
+            <span className="text-xs text-redup">cocok</span>
           </span>
         </div>
       </div>

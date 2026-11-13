@@ -51,7 +51,7 @@ export function NavBawah() {
             <Link
               href={m.href}
               aria-current={aktif(m.href) ? "page" : undefined}
-              className={`label-cetak flex min-h-16 flex-col items-center justify-center gap-1 text-[11px] ${
+              className={`label-cetak flex min-h-16 flex-col items-center justify-center gap-1 text-xs ${
                 aktif(m.href) ? "text-daun" : "text-redup"
               }`}
             >
