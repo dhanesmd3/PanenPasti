@@ -12,7 +12,7 @@
   --color-latar: #efe5d8; /* kanvas halaman */
   --color-kartu: #fbf7f1; /* kartu, header */
   --color-teks: #573d21; /* tinta utama */
-  --color-redup: #6b553d; /* teks sekunder, kontras AA di atas krem */
+  --color-redup: #5a4530; /* teks sekunder, kontras ~7:1 di atas krem (ramah lansia) */
   --color-garis: #e2d2bf; /* garis pemisah pucat */
   --color-pasir: #e8d2bb; /* isi lembut, keadaan aktif */
   --color-terakota: #e3a36e; /* tombol utama */
@@ -28,8 +28,16 @@
   --color-kunyit-muda: #f3e4bf;
 
   --font-serif: var(--font-fraunces), Georgia, serif;
-  --font-narrow: var(--font-barlow-condensed), "Arial Narrow", sans-serif;
-  --font-sans: var(--font-serif);
+  --font-sans: var(--font-atkinson), Verdana, sans-serif;
+  /* Dulu Barlow Condensed. Huruf rapat sulit dibaca lansia, jadi ikut sans. */
+  --font-narrow: var(--font-sans);
+
+  /* Skala teks dinaikkan satu tingkat untuk lansia: text-xs ≈ 14px, text-sm ≈ 16px, text-base ≈ 18px. */
+  --text-xs: 0.875rem;
+  --text-sm: 1rem;
+  --text-base: 1.125rem;
+  --text-lg: 1.25rem;
+  --text-xl: 1.375rem;
 
   /* Bayangan hangat (bukan abu-abu) supaya kartu terangkat tanpa garis tebal. */
   --shadow-sm: 0 1px 2px rgb(87 61 33 / 0.05), 0 4px 14px rgb(87 61 33 / 0.06);
@@ -43,11 +51,15 @@
 body {
   background: var(--color-latar);
   color: var(--color-teks);
-  font-family: var(--font-serif);
-  font-size: 16px;
+  font-family: var(--font-sans);
+  font-size: 1.125rem;
+  line-height: 1.6;
+  -webkit-font-smoothing: antialiased;
+}
+
+.font-serif {
   /* Serif yang lebih membulat, terasa hangat dan tidak kaku. */
   font-variation-settings: "SOFT" 60;
-  -webkit-font-smoothing: antialiased;
 }
 
 h1,
@@ -60,7 +72,7 @@ h3 {
 
 /* Fokus keyboard seragam di semua kontrol (skill ui-ux-pro-max: focus states). */
 :focus-visible {
-  outline: 2px solid var(--color-daun);
+  outline: 3px solid var(--color-daun);
   outline-offset: 3px;
 }
 
@@ -149,10 +161,8 @@ select {
   }
 }
 
-/* Label fungsional: tombol, menu, badge, label form. */
+/* Label fungsional: tombol, menu, badge, label form. Tanpa huruf kapital semua: lebih mudah dibaca lansia. */
 @utility label-cetak {
-  font-family: var(--font-narrow);
-  text-transform: uppercase;
-  letter-spacing: 0.05em;
-  font-weight: 600;
+  font-family: var(--font-sans);
+  font-weight: 700;
 }
