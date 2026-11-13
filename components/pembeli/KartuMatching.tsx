@@ -8,7 +8,8 @@ import { Button } from "@/components/ui/Button";
 import { formatKg } from "@/lib/format";
 import { tanggalPendek } from "@/lib/tanggal";
 import { FormPreOrder } from "./FormPreOrder";
-import { FotoListing, InfoHarga, namaPenjual } from "./listing";
+import { BandingPasar } from "./HargaAcuan";
+import { FotoListing, hargaBerlaku, InfoHarga, namaPenjual } from "./listing";
 
 export function KartuMatching({
   hasil,
@@ -33,6 +34,7 @@ export function KartuMatching({
         <div className="flex min-w-0 flex-1 flex-col gap-1">
           <p className="truncate font-serif text-lg leading-tight">{namaPenjual(penjual)}</p>
           <InfoHarga listing={listing} />
+          <BandingPasar komoditasId={listing.komoditas_id} harga={hargaBerlaku(listing)} ringkas />
           <p className="flex items-center gap-1 text-xs text-redup">
             <Ikon nama="pin" className="size-3.5" />
             <span className="truncate">

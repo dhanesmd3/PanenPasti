@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { Suspense } from "react";
 import { LoncengNotifikasi } from "@/components/LoncengNotifikasi";
+import { Tutorial } from "@/components/Tutorial";
 import { NavAtas, NavBawah, TombolKeluar } from "@/components/pembeli/NavPembeli";
 import { Ikon } from "@/components/ui/Ikon";
 
@@ -39,6 +40,7 @@ export default function Layout({ children }: LayoutProps<"/pembeli">) {
             <Suspense>
               <LoncengNotifikasi />
             </Suspense>
+            <Tutorial peran="pembeli" />
             <TombolKeluar />
           </div>
         </div>

@@ -48,6 +48,16 @@ Isi folder:
    npm run seed
    ```
 
+   Kalau hanya butuh dua akun demo tanpa menyentuh listing:
+
+   ```bash
+   npm run akun:demo
+   ```
+
+   Keduanya membuat `penjual.demo@example.com` dan `pembeli.demo@example.com` yang langsung aktif. Akun yang sudah ada disetel ulang kata sandinya dan dikonfirmasi emailnya, jadi perintah ini juga memperbaiki akun demo yang tidak bisa dipakai masuk. Kata sandinya `DEMO_PASSWORD` di `.env.local` (bawaan `PanenPasti-Demo-2026`). Skrip berhenti dengan petunjuk kalau Supabase tidak bisa dihubungi atau migrasi belum dipasang.
+
+   Tombol **Coba akun demo** (Penjual / Pembeli) di halaman Masuk muncul kalau `DEMO_PASSWORD` juga diisi di server. Di Vercel, tambahkan env itu lalu deploy ulang, karena halaman Masuk dibangun saat build. Kata sandinya tetap di server; browser hanya memanggil `POST /api/auth/demo` dengan `{ "peran": "penjual" }`.
+
 6. Opsional, impor harga PIHPS ke tabel `harga_historis`:
 
    ```bash
@@ -66,7 +76,7 @@ Akun jangan dibuat lewat tombol *Add user* di dashboard. Tombol itu tidak mengir
 
 ### Deploy ke Vercel
 
-Environment variables yang wajib di Vercel (Production dan Preview): `NEXT_PUBLIC_SUPABASE_URL`, `NEXT_PUBLIC_SUPABASE_ANON_KEY`, `NEXT_PUBLIC_APP_URL`, `AI_PROVIDER` beserta key dan model provider yang dipakai, `AI_RATE_LIMIT_PER_HOUR`. `SUPABASE_SERVICE_ROLE_KEY` tidak dibutuhkan aplikasi yang berjalan, jadi tidak perlu dipasang di Vercel.
+Environment variables yang wajib di Vercel (Production dan Preview): `NEXT_PUBLIC_SUPABASE_URL`, `NEXT_PUBLIC_SUPABASE_ANON_KEY`, `NEXT_PUBLIC_APP_URL`, `AI_PROVIDER` beserta key dan model provider yang dipakai, `AI_RATE_LIMIT_PER_HOUR`. Opsional: `DEMO_PASSWORD` (tombol akun demo), `NEXT_PUBLIC_VIDEO_TUTORIAL_PENJUAL` dan `NEXT_PUBLIC_VIDEO_TUTORIAL_PEMBELI` (video di overlay tutorial). `SUPABASE_SERVICE_ROLE_KEY` tidak dibutuhkan aplikasi yang berjalan, jadi tidak perlu dipasang di Vercel.
 
 ## 2. Supabase lokal (cadangan Grand Final)
 
@@ -84,7 +94,7 @@ npx supabase db reset
 npx supabase status
 ```
 
-Salin `API URL`, `anon key`, dan `service_role key` dari keluaran `status` ke `.env.local`, lalu jalankan `npm run seed` dan `npm run dev`. Studio lokal ada di http://localhost:54323.
+Salin `API URL`, `anon key`, dan `service_role key` dari keluaran `status` ke `.env.local`, lalu jalankan `npm run seed` (atau `npm run akun:demo`) dan `npm run dev`. Studio lokal ada di http://localhost:54323.
 
 `config.toml` ditulis tangan dan belum pernah dijalankan dengan CLI. Kalau `supabase start` menolak salah satu barisnya, hapus file itu, jalankan `npx supabase init`, lalu pindahkan tiga pengaturan `[auth]` di dalamnya ke file baru.
 
@@ -255,6 +265,8 @@ Respons gagal selalu berbentuk:
 Sukses `201`: `{ "ok": true, "peran": "pembeli", "perlu_konfirmasi_email": false, "lanjut": "/pembeli" }`. Arahkan pengguna ke `lanjut`. `nama_usaha` opsional. Nomor HP boleh ditulis `0812...`, `+62 812...`, atau `62812...`. Daftar kecamatan untuk dropdown bisa dibaca dari tabel `kecamatan` tanpa login.
 
 **`POST /api/auth/masuk`** dengan body `{ "email", "password", "lanjut"? }`. Sukses: `{ "ok": true, "peran": "penjual", "lanjut": "/penjual" }`. Teruskan nilai `?lanjut=` dari URL halaman Masuk ke field `lanjut`; server hanya menerima path yang sesuai peran. Dibatasi 10 percobaan per akun dan 60 per IP dalam 15 menit.
+
+**`POST /api/auth/demo`** dengan body `{ "peran": "penjual" | "pembeli", "lanjut"? }`. Masuk ke akun demo peran itu memakai `DEMO_PASSWORD` dari env server. Sukses sama dengan `/api/auth/masuk`. `404` kalau `DEMO_PASSWORD` kosong, `503` kalau akun demo belum dibuat (jalankan `npm run akun:demo`).
 
 **`POST /api/auth/keluar`** tanpa body. Sukses: `{ "ok": true }`.
 

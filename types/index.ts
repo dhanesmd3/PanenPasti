@@ -110,6 +110,24 @@ export interface HargaHistoris {
   sumber: string;
 }
 
+/**
+ * Hasil GET /api/harga/acuan: harga pasar terbaru sebagai pembanding harga
+ * di katalog. Rata-rata minggu terakhir yang ada datanya, Rupiah per kg.
+ */
+export interface HargaAcuan {
+  komoditas_id: number;
+  wilayah: string;
+  /** Harga eceran pasar tradisional (harga yang biasa dibayar warung). */
+  pasar_per_kg: number;
+  /** Harga pedagang besar / grosir. */
+  grosir_per_kg: number;
+  /** Senin minggu yang dirata-rata, "YYYY-MM-DD". */
+  minggu: string;
+  /** Tanggal data terakhir, "YYYY-MM-DD". */
+  data_sampai: string;
+  sumber: string;
+}
+
 /** Hasil POST /api/match. */
 export interface HasilMatching {
   listing: Listing;

@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { Suspense } from "react";
 import { LoncengNotifikasi } from "@/components/LoncengNotifikasi";
+import { Tutorial } from "@/components/Tutorial";
 import { TombolKeluar } from "@/components/pembeli/NavPembeli";
 import { NavAtas, NavBawah } from "@/components/penjual/NavPenjual";
 
@@ -25,6 +26,7 @@ export default function Layout({ children }: LayoutProps<"/penjual">) {
               <Suspense>
                 <LoncengNotifikasi />
               </Suspense>
+              <Tutorial peran="penjual" />
               <TombolKeluar />
             </div>
           </div>

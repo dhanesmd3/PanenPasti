@@ -3,23 +3,26 @@
 //   npm run seed
 //
 // Butuh di .env.local: NEXT_PUBLIC_SUPABASE_URL, SUPABASE_SERVICE_ROLE_KEY.
-// Opsional: SEED_PASSWORD (password semua akun simulasi).
+// Opsional: DEMO_PASSWORD (password semua akun simulasi; SEED_PASSWORD lama masih dibaca).
 //
-// Aman dijalankan berulang: akun yang sudah ada dipakai ulang, profil di-upsert,
+// Aman dijalankan berulang: akun yang sudah ada dipakai ulang (kata sandinya
+// disetel ulang dan emailnya dikonfirmasi), profil di-upsert,
 // listing milik penjual simulasi diganti baru dengan tanggal panen relatif hari ini.
 // Asumsi skema: docs/PRD bagian 11 (tabel komoditas, kecamatan, profiles, listings).
 
 import { readFileSync } from "node:fs";
-import { createClient } from "@supabase/supabase-js";
+import {
+  buatKlienAdmin,
+  cekDatabase,
+  EMAIL_DEMO,
+  keluarGagal,
+  PASSWORD_DEMO,
+  pastikanAkun,
+  simpanProfil,
+} from "./akun.mjs";
 
-const url = process.env.NEXT_PUBLIC_SUPABASE_URL;
-const serviceKey = process.env.SUPABASE_SERVICE_ROLE_KEY;
-if (!url || !serviceKey) {
-  console.error("Isi NEXT_PUBLIC_SUPABASE_URL dan SUPABASE_SERVICE_ROLE_KEY di .env.local");
-  process.exit(1);
-}
-const PASSWORD = process.env.SEED_PASSWORD || "PanenPasti-Demo-2026";
-const db = createClient(url, serviceKey, { auth: { persistSession: false } });
+const db = buatKlienAdmin();
+await cekDatabase(db);
 
 const sim = JSON.parse(readFileSync("data/seed/simulasi.json", "utf-8"));
 const kecamatan = readFileSync("data/kecamatan.csv", "utf-8")
@@ -38,43 +41,12 @@ const tambahHari = (t, n) => {
   return d.toISOString().slice(0, 10);
 };
 const emailUntuk = (kunci) =>
-  kunci === "pj1" ? "penjual.demo@example.com"
-  : kunci === "pb1" ? "pembeli.demo@example.com"
+  kunci === "pj1" ? EMAIL_DEMO.penjual
+  : kunci === "pb1" ? EMAIL_DEMO.pembeli
   : `${kunci}.simulasi@example.com`;
 
 function cek(error, langkah) {
-  if (error) {
-    console.error(`Gagal ${langkah}: ${error.message}`);
-    process.exit(1);
-  }
-}
-
-let semuaPengguna = null;
-async function cariPenggunaLewatEmail(email) {
-  if (!semuaPengguna) {
-    semuaPengguna = [];
-    for (let page = 1; ; page++) {
-      const { data, error } = await db.auth.admin.listUsers({ page, perPage: 1000 });
-      cek(error, "membaca daftar pengguna");
-      semuaPengguna.push(...data.users);
-      if (data.users.length < 1000) break;
-    }
-  }
-  return semuaPengguna.find((u) => u.email === email);
-}
-
-async function pastikanAkun(orang, peran) {
-  const email = emailUntuk(orang.kunci);
-  const { data, error } = await db.auth.admin.createUser({
-    email,
-    password: PASSWORD,
-    email_confirm: true,
-    user_metadata: { peran, nama: orang.nama },
-  });
-  if (!error) return { id: data.user.id, email };
-  const ada = await cariPenggunaLewatEmail(email);
-  if (!ada) cek(error, `membuat akun ${email}`);
-  return { id: ada.id, email };
+  if (error) keluarGagal(`Gagal ${langkah}: ${error.message}`);
 }
 
 console.log(`Seed DATA SIMULASI, hari ini ${hariIni}\n`);
@@ -86,20 +58,9 @@ console.log(`✓ ${sim.komoditas.length} komoditas, ${kecamatan.length} kecamata
 const akun = [];
 for (const [daftar, peran] of [[sim.penjual, "penjual"], [sim.pembeli, "pembeli"]]) {
   for (const orang of daftar) {
-    const { id, email } = await pastikanAkun(orang, peran);
-    cek(
-      (
-        await db.from("profiles").upsert({
-          id,
-          peran,
-          nama: orang.nama,
-          nama_usaha: orang.nama_usaha,
-          kecamatan_id: orang.kecamatan_id,
-          no_hp: orang.no_hp,
-        })
-      ).error,
-      `upsert profil ${email}`,
-    );
+    const email = emailUntuk(orang.kunci);
+    const { id } = await pastikanAkun(db, { email, password: PASSWORD_DEMO, peran, nama: orang.nama });
+    await simpanProfil(db, id, { peran, ...orang });
     akun.push({ kunci: orang.kunci, id, email, peran, orang });
   }
 }
@@ -127,6 +88,7 @@ const listings = penjual.flatMap(({ id, orang }) =>
 cek((await db.from("listings").insert(listings)).error, "insert listing");
 console.log(`✓ ${listings.length} listing (tanggal panen relatif dari ${hariIni})`);
 
-console.log(`\nAkun demo (password: ${process.env.SEED_PASSWORD ? "dari SEED_PASSWORD" : PASSWORD}):`);
-console.log("  Penjual: penjual.demo@example.com");
-console.log("  Pembeli: pembeli.demo@example.com");
+const dariEnv = process.env.DEMO_PASSWORD || process.env.SEED_PASSWORD;
+console.log(`\nAkun demo (password: ${dariEnv ? "sesuai DEMO_PASSWORD" : PASSWORD_DEMO}):`);
+console.log(`  Penjual: ${EMAIL_DEMO.penjual}`);
+console.log(`  Pembeli: ${EMAIL_DEMO.pembeli}`);

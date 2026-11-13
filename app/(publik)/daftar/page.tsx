@@ -7,6 +7,7 @@ import { Button } from "@/components/ui/Button";
 import { Field, Input, kelasInput } from "@/components/ui/Input";
 import { Galat } from "@/components/ui/Keadaan";
 import { Ikon, type NamaIkon } from "@/components/ui/Ikon";
+import { tandaiTutorial } from "@/components/Tutorial";
 import { PanelAuth } from "../PanelAuth";
 import { ambilJson, ambilKecamatan, useMuat } from "@/lib/klien";
 
@@ -50,6 +51,7 @@ export default function Page() {
         setCekEmail(true);
         setMengirim(false);
       } else {
+        tandaiTutorial(true);
         window.location.assign(hasil.lanjut);
       }
     } catch (err) {

@@ -10,6 +10,7 @@ import { pesanSupabase, useNamaKomoditas } from "@/lib/klien";
 import { keListing, keProfilPublik } from "@/lib/pesanan";
 import { buatSupabaseBrowser } from "@/lib/supabase/client";
 import { tanggalPendek } from "@/lib/tanggal";
+import { BandingPasar } from "./HargaAcuan";
 
 /** Kolom select listing + profil penjual (sama dengan /api/match). */
 export const KOLOM_LISTING = KOLOM_LISTING_MATCH;
@@ -126,6 +127,7 @@ export function KartuListing({ data, kecamatan }: { data: ListingPenjual; kecama
           {listing.kualitas && <span className="text-redup"> · {listing.kualitas}</span>}
         </p>
         <InfoHarga listing={listing} />
+        <BandingPasar komoditasId={listing.komoditas_id} harga={hargaBerlaku(listing)} ringkas />
         <p className="flex items-center gap-1 text-xs text-redup">
           <Ikon nama="kalender" className="size-3.5" />
           Panen {tanggalPendek(listing.tgl_panen)} · sisa {formatKg(listing.sisa_kg)}

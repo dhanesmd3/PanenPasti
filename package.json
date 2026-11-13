@@ -10,6 +10,7 @@
     "test": "vitest run",
     "test:watch": "vitest",
     "seed": "node --env-file=.env.local scripts/seed-simulasi.mjs",
+    "akun:demo": "node --env-file=.env.local scripts/akun-demo.mjs",
     "impor:harga": "node --env-file=.env.local scripts/impor-harga.mjs",
     "uji:supabase": "node --env-file=.env.local supabase/tests/uji-supabase.mjs",
     "typecheck": "next typegen && tsc --noEmit"

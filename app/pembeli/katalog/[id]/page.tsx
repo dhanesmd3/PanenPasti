@@ -7,7 +7,8 @@ import { Badge } from "@/components/ui/Badge";
 import { Ikon } from "@/components/ui/Ikon";
 import { Galat, Kosong, Memuat } from "@/components/ui/Keadaan";
 import { FormPreOrder } from "@/components/pembeli/FormPreOrder";
-import { FotoListing, InfoHarga, KOLOM_LISTING, keListingPenjual, namaPenjual } from "@/components/pembeli/listing";
+import { BandingPasar } from "@/components/pembeli/HargaAcuan";
+import { FotoListing, hargaBerlaku, InfoHarga, KOLOM_LISTING, keListingPenjual, namaPenjual } from "@/components/pembeli/listing";
 import { pesanSupabase, useKecamatan, useMuat, useNamaKomoditas } from "@/lib/klien";
 import { formatKg } from "@/lib/format";
 import { buatSupabaseBrowser } from "@/lib/supabase/client";
@@ -66,6 +67,8 @@ export default function Page() {
             </h1>
             <InfoHarga listing={listing} besar />
           </div>
+
+          <BandingPasar komoditasId={listing.komoditas_id} harga={hargaBerlaku(listing)} />
 
           <div className="flex flex-col gap-1.5">
             <div className="h-2 overflow-hidden rounded-full bg-pasir/60">

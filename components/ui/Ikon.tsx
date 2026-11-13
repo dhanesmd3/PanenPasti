@@ -29,6 +29,7 @@ const PATH = {
   grafik: ["M4 4v16h16", "m7 15 4-5 3 3 5-6"],
   naik: ["M7 17 17 7", "M9 7h8v8"],
   turun: ["M7 7l10 10", "M17 9v8H9"],
+  putar: ["M12 21a9 9 0 1 0 0-18 9 9 0 0 0 0 18z", "M10 8.5v7l5.5-3.5z"],
 } as const;
 
 export type NamaIkon = keyof typeof PATH;

@@ -112,6 +112,12 @@ export const SkemaMasuk = z.object({
   lanjut: z.string("lanjut harus berupa teks.").max(300, "lanjut terlalu panjang.").nullish(),
 });
 
+/** POST /api/auth/demo */
+export const SkemaMasukDemo = z.object({
+  peran: z.enum(["penjual", "pembeli"], "Pilih peran: penjual atau pembeli."),
+  lanjut: z.string("lanjut harus berupa teks.").max(300, "lanjut terlalu panjang.").nullish(),
+});
+
 /** POST /api/auth/daftar */
 export const SkemaDaftar = z.object({
   email: Email,
