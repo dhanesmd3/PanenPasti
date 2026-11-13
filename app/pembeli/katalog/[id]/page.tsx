@@ -7,6 +7,7 @@ import { Badge } from "@/components/ui/Badge";
 import { Ikon } from "@/components/ui/Ikon";
 import { Galat, Kosong, Memuat } from "@/components/ui/Keadaan";
 import { FormPreOrder } from "@/components/pembeli/FormPreOrder";
+import { DaftarUlasan } from "@/components/Ulasan";
 import { FotoListing, InfoHarga, KOLOM_LISTING, keListingPenjual, namaPenjual } from "@/components/pembeli/listing";
 import { pesanSupabase, useKecamatan, useMuat, useNamaKomoditas } from "@/lib/klien";
 import { formatKg } from "@/lib/format";
@@ -109,6 +110,13 @@ export default function Page() {
           )}
         </div>
       </div>
+
+      <section aria-labelledby="judul-ulasan" className="flex max-w-3xl flex-col gap-4">
+        <h2 id="judul-ulasan" className="font-serif text-2xl">
+          Ulasan untuk {namaPenjual(penjual)}
+        </h2>
+        <DaftarUlasan penjualId={listing.penjual_id} />
+      </section>
     </>
   );
 }
