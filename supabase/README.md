@@ -76,7 +76,7 @@ Akun jangan dibuat lewat tombol *Add user* di dashboard. Tombol itu tidak mengir
 
 ### Deploy ke Vercel
 
-Environment variables yang wajib di Vercel (Production dan Preview): `NEXT_PUBLIC_SUPABASE_URL`, `NEXT_PUBLIC_SUPABASE_ANON_KEY`, `NEXT_PUBLIC_APP_URL`, `AI_PROVIDER` beserta key dan model provider yang dipakai, `AI_RATE_LIMIT_PER_HOUR`. Opsional: `DEMO_PASSWORD` (tombol akun demo), `NEXT_PUBLIC_VIDEO_TUTORIAL_PENJUAL` dan `NEXT_PUBLIC_VIDEO_TUTORIAL_PEMBELI` (video di overlay tutorial). `SUPABASE_SERVICE_ROLE_KEY` tidak dibutuhkan aplikasi yang berjalan, jadi tidak perlu dipasang di Vercel.
+Environment variables yang wajib di Vercel (Production dan Preview): `NEXT_PUBLIC_SUPABASE_URL`, `NEXT_PUBLIC_SUPABASE_ANON_KEY`, `NEXT_PUBLIC_APP_URL`, `AI_PROVIDER` beserta key dan model provider yang dipakai, `AI_RATE_LIMIT_PER_HOUR`. Opsional: `DEMO_PASSWORD` (tombol akun demo), `NEXT_PUBLIC_VIDEO_TUTORIAL_PENJUAL` dan `NEXT_PUBLIC_VIDEO_TUTORIAL_PEMBELI` (tombol "Tonton video" di tur panduan). `SUPABASE_SERVICE_ROLE_KEY` tidak dibutuhkan aplikasi yang berjalan, jadi tidak perlu dipasang di Vercel.
 
 ## 2. Supabase lokal (cadangan Grand Final)
 

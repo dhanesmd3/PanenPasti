@@ -1,20 +1,24 @@
 "use client";
 
-// Overlay tutorial berisi video, muncul sekali setelah daftar atau masuk.
-// Bisa ditutup (tombol ×, Esc, klik di luar kotak, atau "Mulai pakai") dan
-// dibuka lagi lewat tombol "Panduan" di header.
+// Panduan untuk pengguna yang sudah masuk: tur sorotan (components/Tur.tsx)
+// yang menunjuk tombol-tombol penting satu per satu. Muncul sekali setelah
+// daftar atau masuk, bisa dilewati, dan bisa diulang lewat tombol "Panduan".
 //
-// Video diatur lewat env NEXT_PUBLIC_VIDEO_TUTORIAL_PENJUAL / _PEMBELI:
-// URL YouTube, atau path file di public/ (mis. /tutorial-pembeli.mp4).
+// Video bersifat tambahan: kalau env NEXT_PUBLIC_VIDEO_TUTORIAL_PENJUAL / _PEMBELI
+// diisi (URL YouTube atau path file di public/), kartu pembuka tur menampilkan
+// tombol "Tonton video".
 
+import { useRouter } from "next/navigation";
 import { useEffect, useRef, useState } from "react";
 import type { Peran } from "@/types";
-import { Button } from "@/components/ui/Button";
+import { Tur, type LangkahTur } from "@/components/Tur";
 import { Ikon } from "@/components/ui/Ikon";
+import { bacaSimpanan, tulisSimpanan } from "@/lib/simpanan";
+import { BERANDA } from "@/lib/supabase/akses";
 import { sumberVideo } from "@/lib/video";
 
 const KUNCI_SESI = "pp:tutorial";
-const kunciSembunyi = (peran: Peran) => `pp:tutorial-sembunyi:${peran}`;
+const kunciSelesai = (peran: Peran) => `pp:tutorial-selesai:${peran}`;
 
 // Ditulis lengkap supaya Next menyisipkan nilainya saat build.
 const VIDEO: Record<Peran, string | undefined> = {
@@ -22,83 +26,145 @@ const VIDEO: Record<Peran, string | undefined> = {
   pembeli: process.env.NEXT_PUBLIC_VIDEO_TUTORIAL_PEMBELI,
 };
 
-const LANGKAH: Record<Peran, { judul: string; teks: string }[]> = {
+const menu = (peran: Peran, href: string) => `nav[aria-label="Menu ${peran}"] a[href="${href}"]`;
+const LONCENG = 'header a[href="/notifikasi"]';
+const AKUN = 'header button[aria-label="Menu akun"]';
+const PANDUAN = '[data-tur="panduan"]';
+
+const PEMBUKA: LangkahTur = {
+  judul: "Selamat datang di PanenPasti",
+  teks: "Kami tunjukkan tombol-tombol pentingnya satu per satu. Hanya sebentar, dan bisa dilewati kapan saja.",
+};
+const PENUTUP: LangkahTur = {
+  target: PANDUAN,
+  judul: "Lupa caranya?",
+  teks: "Tekan Panduan kapan saja untuk melihat petunjuk ini lagi.",
+};
+
+const LANGKAH: Record<Peran, LangkahTur[]> = {
   penjual: [
-    { judul: "Catat panen", teks: "Buka menu Panen, tekan Tambah panen, isi perkiraan jumlah, tanggal, dan harga." },
-    { judul: "Terima pesanan", teks: "Pembeli memesan sebelum panen. Konfirmasi pesanan di menu Pesanan." },
-    { judul: "Cek harga", teks: "Menu Harga menunjukkan perkiraan harga supaya Anda tahu kapan sebaiknya menjual." },
+    PEMBUKA,
+    {
+      target: 'main a[href="/penjual/panen/baru"]',
+      judul: "Catat panen di sini",
+      teks: "Tekan Tambah panen, lalu isi perkiraan jumlah, tanggal, dan harga Anda. Bisa juga diceritakan seperti mengetik pesan, nanti terisi sendiri.",
+    },
+    {
+      target: menu("penjual", "/penjual/panen"),
+      judul: "Panen Saya",
+      teks: "Semua panen yang Anda catat ada di sini. Bisa diubah kapan saja, atau ditandai Surplus kalau panen berlebih.",
+    },
+    {
+      target: menu("penjual", "/penjual/pesanan"),
+      judul: "Pesanan dari pembeli",
+      teks: "Warung memesan sebelum Anda panen. Terima atau tolak di sini. Pesanan yang tidak dijawab dalam 48 jam batal sendiri.",
+    },
+    {
+      target: menu("penjual", "/penjual/harga"),
+      judul: "Perkiraan harga",
+      teks: "Lihat perkiraan harga beberapa minggu ke depan dan saran kapan sebaiknya menjual.",
+    },
+    {
+      target: LONCENG,
+      judul: "Kabar terbaru",
+      teks: "Lonceng ini memberi tanda kalau ada pesanan baru atau pesanan yang berubah.",
+    },
+    {
+      target: AKUN,
+      judul: "Akun dan ukuran huruf",
+      teks: "Ubah profil dan nomor WhatsApp di sini. Kalau huruf terasa kecil, buka Pengaturan lalu perbesar Ukuran teks.",
+    },
+    PENUTUP,
   ],
   pembeli: [
-    { judul: "Cari pemasok", teks: "Tulis kebutuhan Anda, mis. \"20 kg cabai rawit tiap Senin\". Penjual yang cocok muncul otomatis." },
-    { judul: "Bandingkan harga", teks: "Lihat harga acuan pasar di Beranda dan bandingkan dengan harga petani di Katalog." },
-    { judul: "Pesan sebelum panen", teks: "Atur pre-order. Nomor WhatsApp penjual muncul di Pesanan setelah dikonfirmasi." },
+    PEMBUKA,
+    {
+      target: 'header form[role="search"]',
+      judul: "Tulis kebutuhan Anda",
+      teks: "Ketik dengan kalimat biasa, misalnya \"20 kg cabai rawit tiap Senin\". Kami carikan petani yang paling cocok.",
+    },
+    {
+      target: '[data-tur="harga-acuan"]',
+      judul: "Harga acuan pasar",
+      teks: "Harga pasar per kilo saat ini. Pakai untuk membandingkan dengan harga petani sebelum memesan.",
+    },
+    {
+      target: menu("pembeli", "/pembeli/katalog"),
+      judul: "Katalog panen",
+      teks: "Semua panen yang akan datang. Setiap kartu menunjukkan harganya di bawah atau di atas harga pasar.",
+    },
+    {
+      target: menu("pembeli", "/pembeli/pesanan"),
+      judul: "Pesanan Saya",
+      teks: "Pantau status pre-order Anda. Setelah penjual menerima pesanan, tombol WhatsApp-nya muncul di sini.",
+    },
+    {
+      target: LONCENG,
+      judul: "Kabar terbaru",
+      teks: "Lonceng ini memberi tanda kalau pesanan diterima atau dikirim, dan kalau ada panen surplus dengan harga khusus di sekitar Anda.",
+    },
+    {
+      target: AKUN,
+      judul: "Akun dan ukuran huruf",
+      teks: "Ubah profil dan nomor WhatsApp di sini. Kalau huruf terasa kecil, buka Pengaturan lalu perbesar Ukuran teks.",
+    },
+    PENUTUP,
   ],
 };
 
-function baca(simpanan: () => Storage, kunci: string): string | null {
-  try {
-    return simpanan().getItem(kunci);
-  } catch {
-    return null;
-  }
-}
-
-function tulis(simpanan: () => Storage, kunci: string, nilai: string | null) {
-  try {
-    if (nilai === null) simpanan().removeItem(kunci);
-    else simpanan().setItem(kunci, nilai);
-  } catch {
-    // Penyimpanan diblokir (mode privat): tutorial tetap jalan, hanya tidak diingat.
-  }
-}
-
 /**
  * Panggil tepat sebelum pindah halaman setelah login/daftar berhasil.
- * `baru` = akun baru: tutorial tampil walau sebelumnya pernah disembunyikan di perangkat ini.
+ * `baru` = akun baru: tur tampil walau pernah dilewati di perangkat ini.
  */
 export function tandaiTutorial(baru = false) {
-  tulis(() => sessionStorage, KUNCI_SESI, baru ? "baru" : "masuk");
+  tulisSimpanan("sesi", KUNCI_SESI, baru ? "baru" : "masuk");
 }
 
 export function Tutorial({ peran }: { peran: Peran }) {
+  const router = useRouter();
   const dialog = useRef<HTMLDialogElement>(null);
-  const [terbuka, setTerbuka] = useState(false);
-  const [sembunyikan, setSembunyikan] = useState(false);
+  const [tur, setTur] = useState(false);
+  const [videoTerbuka, setVideoTerbuka] = useState(false);
   const video = sumberVideo(VIDEO[peran]);
 
   useEffect(() => {
-    const tanda = baca(() => sessionStorage, KUNCI_SESI);
+    const tanda = bacaSimpanan("sesi", KUNCI_SESI);
     if (!tanda) return;
-    tulis(() => sessionStorage, KUNCI_SESI, null);
-    if (tanda === "baru" || !baca(() => localStorage, kunciSembunyi(peran))) {
+    tulisSimpanan("sesi", KUNCI_SESI, null);
+    if (tanda === "baru" || !bacaSimpanan("lokal", kunciSelesai(peran))) {
       // Ditunda satu frame supaya tidak memicu render berantai di dalam effect.
-      requestAnimationFrame(() => setTerbuka(true));
+      requestAnimationFrame(() => setTur(true));
     }
   }, [peran]);
 
   useEffect(() => {
     const d = dialog.current;
     if (!d) return;
-    if (terbuka && !d.open) d.showModal();
-    if (!terbuka && d.open) d.close();
-  }, [terbuka]);
+    if (videoTerbuka && !d.open) d.showModal();
+    if (!videoTerbuka && d.open) d.close();
+  }, [videoTerbuka]);
 
-  function buka() {
-    setSembunyikan(!!baca(() => localStorage, kunciSembunyi(peran)));
-    setTerbuka(true);
+  function mulai() {
+    // Beberapa langkah menyorot isi beranda, jadi tur selalu dimulai dari sana.
+    if (window.location.pathname !== BERANDA[peran]) router.push(BERANDA[peran]);
+    setTur(true);
   }
 
-  // Dipanggil juga saat dialog ditutup dengan Esc (event "close").
-  function tutup() {
-    tulis(() => localStorage, kunciSembunyi(peran), sembunyikan ? "1" : null);
-    setTerbuka(false);
+  function selesai() {
+    tulisSimpanan("lokal", kunciSelesai(peran), "1");
+    setTur(false);
   }
+
+  const langkah = LANGKAH[peran].map((l, i) =>
+    i === 0 && video ? { ...l, aksi: { label: "Tonton video", onClick: () => setVideoTerbuka(true) } } : l,
+  );
 
   return (
     <>
       <button
         type="button"
-        onClick={buka}
+        onClick={mulai}
+        data-tur="panduan"
         aria-label="Panduan memakai PanenPasti"
         className="label-cetak flex h-10 items-center gap-1.5 rounded-full px-2.5 text-sm text-redup transition hover:bg-pasir/60 hover:text-teks"
       >
@@ -106,83 +172,49 @@ export function Tutorial({ peran }: { peran: Peran }) {
         <span className="hidden sm:inline">Panduan</span>
       </button>
 
-      <dialog
-        ref={dialog}
-        onClose={tutup}
-        onClick={(e) => e.target === e.currentTarget && tutup()}
-        aria-labelledby="judul-tutorial"
-        className="m-auto max-h-[calc(100dvh-2rem)] w-[calc(100%-2rem)] max-w-2xl overflow-y-auto rounded-3xl bg-kartu p-0 text-teks shadow-md backdrop:bg-teks/60 backdrop:backdrop-blur-sm"
-      >
-        {/* Isi hanya dipasang saat terbuka, jadi video berhenti begitu ditutup. */}
-        {terbuka && (
-          <div className="flex flex-col gap-5 p-5 sm:p-7">
-            <div className="flex items-start justify-between gap-4">
-              <div>
-                <p className="label-cetak text-sm text-redup">Selamat datang</p>
-                <h2 id="judul-tutorial" className="font-serif text-2xl leading-tight sm:text-3xl">
-                  Cara pakai PanenPasti
+      {tur && <Tur langkah={langkah} onSelesai={selesai} />}
+
+      {video && (
+        <dialog
+          ref={dialog}
+          onClose={() => setVideoTerbuka(false)}
+          onClick={(e) => e.target === e.currentTarget && setVideoTerbuka(false)}
+          aria-labelledby="judul-video-panduan"
+          className="m-auto w-[calc(100%-2rem)] max-w-2xl rounded-3xl bg-kartu p-0 text-teks shadow-md backdrop:bg-teks/60 backdrop:backdrop-blur-sm"
+        >
+          {/* Isi hanya dipasang saat terbuka, jadi video berhenti begitu ditutup. */}
+          {videoTerbuka && (
+            <div className="flex flex-col gap-4 p-5 sm:p-7">
+              <div className="flex items-center justify-between gap-4">
+                <h2 id="judul-video-panduan" className="font-serif text-2xl leading-tight">
+                  Video panduan
                 </h2>
+                <button
+                  type="button"
+                  onClick={() => setVideoTerbuka(false)}
+                  aria-label="Tutup video"
+                  className="flex size-12 shrink-0 items-center justify-center rounded-full bg-latar text-teks transition hover:bg-pasir"
+                >
+                  <Ikon nama="silang" className="size-6" />
+                </button>
               </div>
-              <button
-                type="button"
-                onClick={tutup}
-                aria-label="Tutup panduan"
-                className="flex size-12 shrink-0 items-center justify-center rounded-full bg-latar text-teks transition hover:bg-pasir"
-              >
-                <Ikon nama="silang" className="size-6" />
-              </button>
+              <div className="aspect-video overflow-hidden rounded-2xl bg-teks">
+                {video.jenis === "youtube" ? (
+                  <iframe
+                    src={video.src}
+                    title="Video panduan PanenPasti"
+                    allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                    allowFullScreen
+                    className="size-full"
+                  />
+                ) : (
+                  <video src={video.src} controls playsInline preload="metadata" className="size-full" />
+                )}
+              </div>
             </div>
-
-            <div className="aspect-video overflow-hidden rounded-2xl bg-teks">
-              {video?.jenis === "youtube" ? (
-                <iframe
-                  src={video.src}
-                  title="Video panduan PanenPasti"
-                  allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-                  allowFullScreen
-                  className="size-full"
-                />
-              ) : video?.jenis === "file" ? (
-                <video src={video.src} controls playsInline preload="metadata" className="size-full" />
-              ) : (
-                <div className="flex size-full flex-col items-center justify-center gap-2 bg-pasir/60 p-6 text-center text-redup">
-                  <Ikon nama="putar" className="size-10" />
-                  <p>Video panduan segera hadir. Ikuti tiga langkah di bawah dulu.</p>
-                </div>
-              )}
-            </div>
-
-            <ol className="grid gap-3 sm:grid-cols-3">
-              {LANGKAH[peran].map((l, i) => (
-                <li key={l.judul} className="flex gap-3 rounded-2xl bg-latar/60 p-4 sm:flex-col">
-                  <span className="flex size-8 shrink-0 items-center justify-center rounded-full bg-terakota font-narrow text-lg font-bold">
-                    {i + 1}
-                  </span>
-                  <span>
-                    <span className="block font-serif text-lg leading-snug">{l.judul}</span>
-                    <span className="block text-base leading-relaxed text-redup">{l.teks}</span>
-                  </span>
-                </li>
-              ))}
-            </ol>
-
-            <div className="flex flex-col-reverse gap-3 sm:flex-row sm:items-center sm:justify-between">
-              <label className="flex min-h-12 items-center gap-3 text-base">
-                <input
-                  type="checkbox"
-                  checked={sembunyikan}
-                  onChange={(e) => setSembunyikan(e.target.checked)}
-                  className="size-5 accent-daun"
-                />
-                Jangan tampilkan lagi saat masuk
-              </label>
-              <Button onClick={tutup}>
-                Mulai pakai <Ikon nama="panah" className="size-4" />
-              </Button>
-            </div>
-          </div>
-        )}
-      </dialog>
+          )}
+        </dialog>
+      )}
     </>
   );
 }

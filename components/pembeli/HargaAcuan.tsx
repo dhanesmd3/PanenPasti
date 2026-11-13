@@ -34,7 +34,7 @@ export function KartuHargaAcuan() {
   if (memuat || daftar.length === 0) return null;
 
   return (
-    <section aria-labelledby="judul-acuan" className="flex flex-col gap-4 rounded-2xl bg-kartu p-5 shadow-sm md:p-6">
+    <section data-tur="harga-acuan" aria-labelledby="judul-acuan" className="flex flex-col gap-4 rounded-2xl bg-kartu p-5 shadow-sm md:p-6">
       <div className="flex items-start gap-3">
         <span className="flex size-10 shrink-0 items-center justify-center rounded-full bg-pasir/70 text-daun">
           <Ikon nama="grafik" />

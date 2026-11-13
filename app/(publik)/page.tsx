@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { TurTamu } from "@/components/TurTamu";
 import { kelasTombol } from "@/components/ui/Button";
 import { IlustrasiLadang } from "@/components/ui/IlustrasiLadang";
 import { Gelombang } from "@/components/ui/Gelombang";
@@ -86,6 +87,7 @@ export default function Page() {
             Masuk
           </Link>
         </div>
+        <TurTamu />
         <Gelombang className="absolute inset-x-0 bottom-0 text-latar" />
       </section>
 
@@ -126,6 +128,7 @@ export default function Page() {
         {DUA_SISI.map((d, i) => (
           <div
             key={d.untuk}
+            data-tur={i === 0 ? "sisi-penjual" : "sisi-pembeli"}
             className={`muncul-gulir flex flex-col gap-5 rounded-3xl p-8 md:p-10 ${i === 0 ? "bg-sage/70" : "bg-pasir/70"}`}
           >
             <span className="flex size-14 items-center justify-center rounded-full bg-kartu text-daun shadow-sm">
@@ -153,7 +156,7 @@ export default function Page() {
       <section id="cara-kerja" className="bg-kartu">
         <div className="mx-auto flex max-w-6xl flex-col gap-10 px-4 py-20">
           <h2 className="text-center font-serif text-4xl md:text-5xl">Cara kerjanya</h2>
-          <ol className="grid gap-6 md:grid-cols-3">
+          <ol data-tur="cara-kerja" className="grid gap-6 md:grid-cols-3">
             {LANGKAH.map((l, i) => (
               <li key={l.judul} className="muncul-gulir flex flex-col gap-3 rounded-3xl bg-latar/70 p-8">
                 <span className="flex size-12 items-center justify-center rounded-full bg-terakota text-teks">
