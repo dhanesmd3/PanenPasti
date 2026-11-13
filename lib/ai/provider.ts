@@ -89,16 +89,98 @@ function buatGemini(): ProviderAI {
   };
 }
 
+const BATAS_WAKTU_MS = 30_000;
+
+/** Buang pagar ```json ... ``` yang kadang ditambahkan model. */
+function bersihkanPagarJson(teks: string): string {
+  const cocok = teks.trim().match(/^```(?:json)?\s*([\s\S]*?)\s*```$/);
+  return cocok ? cocok[1] : teks;
+}
+
+// OpenRouter memakai format chat completions ala OpenAI.
+// https://openrouter.ai/docs/api-reference/overview
+function buatOpenRouter(): ProviderAI {
+  const model = wajibEnv("OPENROUTER_MODEL");
+  const apiKey = wajibEnv("OPENROUTER_API_KEY");
+
+  return {
+    nama: "openrouter",
+    model,
+    async hasilkanTeks({ sistem, prompt, jsonSchema, temperature = 0.2 }) {
+      let res: Response;
+      try {
+        res = await fetch("https://openrouter.ai/api/v1/chat/completions", {
+          method: "POST",
+          headers: {
+            Authorization: `Bearer ${apiKey}`,
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            model,
+            temperature,
+            messages: [
+              {
+                role: "system",
+                content: jsonSchema
+                  ? `${sistem}\n\nJawab HANYA dengan JSON yang sesuai skema ini, tanpa teks lain:\n${JSON.stringify(jsonSchema)}`
+                  : sistem,
+              },
+              { role: "user", content: prompt },
+            ],
+            ...(jsonSchema
+              ? {
+                  response_format: {
+                    type: "json_schema",
+                    json_schema: { name: "hasil", strict: false, schema: jsonSchema },
+                  },
+                }
+              : {}),
+          }),
+          signal: AbortSignal.timeout(BATAS_WAKTU_MS),
+        });
+      } catch (e) {
+        const habisWaktu = (e as Error).name === "TimeoutError";
+        throw new GalatAI(
+          "layanan",
+          habisWaktu
+            ? `OpenRouter tidak menjawab dalam ${BATAS_WAKTU_MS / 1000} detik`
+            : (e as Error).message,
+        );
+      }
+
+      const body = (await res.json().catch(() => null)) as {
+        error?: { message?: string };
+        choices?: { message?: { content?: string | null } }[];
+      } | null;
+
+      if (!res.ok || body?.error) {
+        const status = res.ok ? undefined : res.status;
+        throw new GalatAI(
+          status === 429 || status === 402 ? "kuota" : "layanan",
+          body?.error?.message ?? `OpenRouter HTTP ${res.status}`,
+          status,
+        );
+      }
+
+      const teks = body?.choices?.[0]?.message?.content;
+      if (!teks) throw new GalatAI("output", "Jawaban AI kosong");
+      return jsonSchema ? bersihkanPagarJson(teks) : teks;
+    },
+  };
+}
+
 /** Provider sesuai env AI_PROVIDER. Cadangan (groq, anthropic) menyusul. */
 export function ambilProviderAI(): ProviderAI {
   const pilihan = process.env.AI_PROVIDER ?? "gemini";
   switch (pilihan) {
     case "gemini":
       return buatGemini();
+    case "openrouter":
+      return buatOpenRouter();
     default:
       throw new GalatAI(
         "konfigurasi",
-        `AI_PROVIDER "${pilihan}" belum didukung. Pilihan saat ini: gemini`,
+        `AI_PROVIDER "${pilihan}" belum didukung. Pilihan saat ini: gemini, openrouter`,
       );
   }
 }
